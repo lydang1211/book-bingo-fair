@@ -20,7 +20,6 @@
     html { scroll-behavior: smooth; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
 
-    /* ── HEADER ── */
     header { background: rgba(255,255,255,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
     .header-brand h1 { font-size: 19px; font-weight: 600; letter-spacing: -0.3px; }
     .header-brand p { font-size: 12px; color: var(--text-2); margin-top: 2px; }
@@ -29,30 +28,25 @@
     .btn-primary:active { transform: scale(0.97); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* ── TABS ── */
     .tabs-bar { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; padding: 0 32px; gap: 4px; overflow-x: auto; }
     .tab-btn { padding: 13px 18px; font-size: 14px; font-weight: 500; color: var(--text-2); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s; }
     .tab-btn:hover { color: var(--text); }
     .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-    /* ── MAIN ── */
     main { max-width: 1100px; margin: 0 auto; padding: 32px; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; animation: fadeUp 0.3s ease both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── LOADING ── */
     .loading-state { grid-column: 1/-1; text-align: center; padding: 56px 32px; }
     .loading-state .spin { font-size: 36px; display: inline-block; animation: spin 1.2s linear infinite; margin-bottom: 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-state p { font-size: 15px; color: var(--text-2); font-weight: 500; }
 
-    /* ── TOAST ── */
-    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1d1d1f; color: white; padding: 12px 22px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; z-index: 600; opacity: 0; transition: all 0.3s ease; white-space: nowrap; box-shadow: var(--shadow-md); pointer-events: none; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1d1d1f; color: white; padding: 12px 22px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; z-index: 600; opacity: 0; transition: all 0.3s ease; white-space: nowrap; box-shadow: var(--shadow-md); pointer-events: none; max-width: 90vw; white-space: normal; text-align: center; }
     .toast.error { background: #c0392b; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── BOOK GRID ── */
     .fair-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .fair-toolbar span { font-size: 13px; color: var(--text-2); }
     .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
@@ -74,19 +68,17 @@
     .act-btn.liked { background: var(--accent-lighter); border-color: var(--accent-light); color: var(--accent); }
     .act-btn.borrowed { background: #e8f4fd; border-color: #b3d9f5; color: #1a6fa8; }
 
-    /* ── EMPTY STATE ── */
     .empty-state { grid-column: 1/-1; text-align: center; padding: 64px 32px; }
     .empty-state .big-emoji { font-size: 52px; margin-bottom: 16px; }
     .empty-state h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
     .empty-state p { font-size: 15px; color: var(--text-2); }
 
-    /* ── BINGO ── */
     .bingo-wrap { max-width: 620px; margin: 0 auto; }
     .section-header { text-align: center; margin-bottom: 24px; }
     .section-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
     .section-header p { color: var(--text-2); font-size: 14px; }
     .bingo-progress-wrap { text-align: center; margin-bottom: 20px; }
-    .bingo-progress { text-align: center; font-size: 14px; color: var(--text-2); background: var(--surface); border-radius: var(--r-pill); padding: 10px 20px; display: inline-block; box-shadow: var(--shadow-sm); }
+    .bingo-progress { font-size: 14px; color: var(--text-2); background: var(--surface); border-radius: var(--r-pill); padding: 10px 20px; display: inline-block; box-shadow: var(--shadow-sm); }
     .bingo-progress strong { color: var(--accent); }
     .bingo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
     .bingo-cell { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 12px 8px; text-align: center; font-size: 11.5px; color: var(--text); cursor: pointer; transition: all 0.2s; line-height: 1.4; min-height: 88px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; user-select: none; }
@@ -96,7 +88,6 @@
     .bingo-cell.wild { background: linear-gradient(135deg, #fff9e8, #ffedbb); border-color: #e8c84a; font-weight: 600; font-size: 12px; }
     .bingo-cell.wild.done { background: #b8960c; border-color: #b8960c; }
 
-    /* ── LEADERBOARD ── */
     .lb-wrap { max-width: 680px; margin: 0 auto; }
     .section-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
     .scoring-box { background: var(--surface); border-radius: var(--r); padding: 18px 22px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
@@ -115,7 +106,6 @@
     .lb-sec { color: var(--text-2); text-align: right; font-size: 13px; }
     .lb-empty { text-align: center; padding: 32px; color: var(--text-2); font-size: 14px; }
 
-    /* ── HOW TO PLAY ── */
     .how-wrap { max-width: 660px; margin: 0 auto; }
     .steps { margin-bottom: 32px; }
     .step { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--border); }
@@ -130,7 +120,6 @@
     .award-card h4 { font-size: 14px; font-weight: 600; }
     .award-card p { font-size: 12px; color: var(--text-2); margin-top: 3px; }
 
-    /* ── MODALS ── */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
     .overlay.open { opacity: 1; pointer-events: all; }
     .modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: scale(0.95) translateY(10px); transition: transform 0.25s; }
@@ -147,9 +136,9 @@
     .m-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .m-recommender { font-size: 13px; color: var(--text-2); }
     .m-recommender span { font-weight: 600; color: var(--text); }
-    .m-review { font-size: 15px; color: var(--text); line-height: 1.7; margin-bottom: 18px; }
-    .m-full-review { font-size: 14px; color: var(--text); line-height: 1.8; white-space: pre-wrap; background: var(--bg); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 18px; border-left: 3px solid var(--accent-light); }
-    .m-full-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 8px; }
+    .m-review { font-size: 15px; color: var(--text); line-height: 1.7; margin-bottom: 14px; }
+    .m-full-review { background: var(--accent-lighter); border-left: 3px solid var(--accent-light); border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 14px 16px; margin-bottom: 18px; font-size: 14px; color: var(--text); line-height: 1.8; white-space: pre-wrap; }
+    .m-full-review-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
     .m-actions { display: flex; gap: 10px; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; }
     .return-section h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 12px; }
     .rr-item { background: var(--bg); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 8px; }
@@ -160,36 +149,37 @@
     .rr-form.hidden { display: none; }
     .m-header { padding: 22px 24px 0; display: flex; align-items: center; justify-content: space-between; }
     .m-header h2 { font-size: 19px; font-weight: 600; }
-    .m-close-x { background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer; padding: 4px; transition: color 0.2s; }
+    .m-close-x { background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer; padding: 4px; }
     .m-close-x:hover { color: var(--text); }
 
-    /* ── FORMS ── */
     .form-g { margin-bottom: 15px; }
     .form-g label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
     .form-g label .opt { font-weight: 400; color: var(--text-3); }
     .form-g input, .form-g select, .form-g textarea { width: 100%; padding: 10px 13px; border: 1.5px solid rgba(0,0,0,0.12); border-radius: var(--r-sm); font-size: 14px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
     .form-g input:focus, .form-g select:focus, .form-g textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,94,60,0.12); }
     .form-g textarea { resize: vertical; min-height: 80px; }
+    .form-g textarea.tall { min-height: 160px; }
     .form-g select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6e73' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-    .form-hint { font-size: 11.5px; color: var(--text-3); margin-top: 4px; }
+    .form-hint { font-size: 11.5px; color: var(--text-3); margin-top: 5px; line-height: 1.5; }
+    .word-count { font-size: 11px; color: var(--text-3); text-align: right; margin-top: 3px; }
+    .word-count.over { color: #c0392b; }
+    .cover-preview { margin-top: 8px; display: none; }
+    .cover-preview img { width: 72px; height: 96px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--border); }
     .btn-full { width: 100%; padding: 12px; text-align: center; font-size: 15px; }
 
-    /* ── RESPONSIVE ── */
     @media screen and (max-width: 640px) {
       header { padding: 14px 18px; } .header-brand h1 { font-size: 16px; }
       .tabs-bar { padding: 0 14px; } main { padding: 20px 16px; }
       .book-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       .bingo-grid { gap: 5px; } .bingo-cell { font-size: 10.5px; min-height: 76px; padding: 9px 6px; }
       .awards-row { flex-direction: column; }
-      .lb-row { grid-template-columns: 38px 1fr 60px; }
-      .lb-row .lb-sec { display: none; }
+      .lb-row { grid-template-columns: 38px 1fr 60px; } .lb-row .lb-sec { display: none; }
     }
     @media screen and (max-width: 380px) { .book-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
 <header>
   <div class="header-brand">
     <h1>📚 Amanotes Book Bingo Fair</h1>
@@ -198,7 +188,6 @@
   <button class="btn-primary" onclick="openAddBook()">+ Add Your Book</button>
 </header>
 
-<!-- ── TABS ── -->
 <div class="tabs-bar">
   <button class="tab-btn active" onclick="switchTab('fair',this)">📚 Book Fair</button>
   <button class="tab-btn" onclick="switchTab('bingo',this)">🎴 Bingo Card</button>
@@ -207,35 +196,27 @@
 </div>
 
 <main>
-  <!-- BOOK FAIR -->
   <div class="tab-panel active" id="tab-fair">
     <div class="fair-toolbar">
       <span id="bookCount"></span>
       <button class="act-btn" onclick="refreshBooks()" style="font-size:13px">🔄 Refresh</button>
     </div>
     <div class="book-grid" id="bookGrid">
-      <div class="loading-state">
-        <div class="spin">⏳</div>
-        <p>Loading the book fair...</p>
-      </div>
+      <div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>
     </div>
   </div>
 
-  <!-- BINGO CARD -->
   <div class="tab-panel" id="tab-bingo">
     <div class="bingo-wrap">
       <div class="section-header">
         <h2>🎴 Your Bingo Card</h2>
         <p>Click a square when you've posted a book for that category.<br>Complete any row, column, or diagonal to finish a line!</p>
       </div>
-      <div class="bingo-progress-wrap">
-        <div class="bingo-progress" id="bingoProgress">0/16 squares marked · 0 lines completed</div>
-      </div>
+      <div class="bingo-progress-wrap"><div class="bingo-progress" id="bingoProgress">0/16 squares marked · 0 lines completed</div></div>
       <div class="bingo-grid" id="bingoGrid"></div>
     </div>
   </div>
 
-  <!-- LEADERBOARD -->
   <div class="tab-panel" id="tab-leaderboard">
     <div class="lb-wrap">
       <div class="section-title">🏆 Leaderboard</div>
@@ -250,16 +231,15 @@
     </div>
   </div>
 
-  <!-- HOW TO PLAY -->
   <div class="tab-panel" id="tab-how">
     <div class="how-wrap">
       <div class="section-title">❓ How to Play</div>
       <div class="steps">
-        <div class="step"><div class="step-num">1</div><div><h3>📝 Recommend a book</h3><p>Click <strong>"+ Add Your Book"</strong> at the top. Pick a bingo category, write a micro-review (1–3 sentences: <em>"This book made me ___"</em>), and submit. You earn <strong>2 points</strong> instantly.</p></div></div>
-        <div class="step"><div class="step-num">2</div><div><h3>👍 Like books you love</h3><p>Browse the Book Fair. If something resonates, hit 👍. Every like earns the recommender <strong>0.5 points</strong>. No cap — keep liking!</p></div></div>
-        <div class="step"><div class="step-num">3</div><div><h3>📖 Borrow & Return</h3><p>Hit <strong>"📖 Want to Borrow"</strong> to signal interest, then grab the physical copy from the recommder. After reading, come back and post a <strong>return review</strong>. You and the recommender each earn <strong>2 points</strong>.</p></div></div>
-        <div class="step"><div class="step-num">4</div><div><h3>🎴 Complete your Bingo Card</h3><p>Head to the Bingo Card tab and mark each category as you post for it. Complete any <strong>row, column, or diagonal</strong> (4 squares) to finish a line!</p></div></div>
-        <div class="step"><div class="step-num">5</div><div><h3>📌 Key rules</h3><p>Duplicate book posts are welcome. <strong>"Want to Borrow"</strong> is a social signal only. The returned review is what earns points. No rating system — share freely, judgment-free!</p></div></div>
+        <div class="step"><div class="step-num">1</div><div><h3>📝 Recommend a book</h3><p>Click <strong>"+ Add Your Book"</strong>. Pick a bingo category, write a micro-review (tagline) and optionally a longer full review. You earn <strong>2 points</strong> instantly.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>👍 Like books you love</h3><p>Browse the Book Fair. Hit 👍 on anything that resonates. Every like earns the recommender <strong>0.5 points</strong>.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h3>📖 Borrow & Return</h3><p>Hit <strong>"📖 Want to Borrow"</strong> to signal interest, then grab the physical copy from the recommender. After reading, post a <strong>return review</strong>. You and the recommender each earn <strong>2 points</strong>.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>🎴 Complete your Bingo Card</h3><p>Mark categories as you post for them. Complete any <strong>row, column, or diagonal</strong> to finish a line!</p></div></div>
+        <div class="step"><div class="step-num">5</div><div><h3>📌 Key rules</h3><p>Duplicate book posts are welcome. "Want to Borrow" is a social signal only. No rating system — share freely, judgment-free!</p></div></div>
       </div>
       <div class="awards-row">
         <div class="award-card"><div class="medal">🥇</div><h4>Top Scorer</h4><p>Book voucher</p></div>
@@ -271,12 +251,12 @@
   </div>
 </main>
 
-<!-- ── BOOK DETAIL MODAL ── -->
+<!-- BOOK DETAIL MODAL -->
 <div class="overlay" id="bookOverlay" onclick="overlayClose(event,'bookOverlay')">
   <div class="modal" id="bookModalContent"></div>
 </div>
 
-<!-- ── ADD BOOK MODAL ── -->
+<!-- ADD BOOK MODAL -->
 <div class="overlay" id="addOverlay" onclick="overlayClose(event,'addOverlay')">
   <div class="modal">
     <div class="m-header">
@@ -309,30 +289,34 @@
         </select>
       </div>
       <div class="form-g"><label>Your Name *</label><input type="text" id="f-name" placeholder="e.g. Ly Dang" /></div>
-      <div class="form-g"><label>Micro-Review * <span class="opt">(1–3 sentences — shown on the card)</span></label><textarea id="f-review" placeholder="This book made me ___..."></textarea></div>
-      <div class="form-g"><label>Full Review <span class="opt">(optional — shown inside the book page)</span></label><textarea id="f-fullreview" placeholder="Write a longer review here, up to 2000 words..." style="min-height:140px;"></textarea><div class="form-hint">Chỉ hiển thị khi bấm vào card · Tối đa 2000 từ</div></div>
       <div class="form-g">
-        <label>Book Cover <span class="opt">(optional — JPEG, PNG, WEBP)</span></label>
-        <input type="file" id="f-cover" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewCover(this)" style="padding:8px 13px;cursor:pointer;" />
-        <div id="coverPreview" style="display:none;margin-top:10px;text-align:center;">
-          <img id="coverPreviewImg" style="max-height:130px;max-width:100%;border-radius:8px;object-fit:cover;box-shadow:var(--shadow-sm);" />
-          <div style="font-size:11px;color:var(--text-3);margin-top:5px">Preview · ảnh sẽ được nén tự động</div>
+        <label>Micro-Review * <span class="opt">(1–3 sentences — shown on card)</span></label>
+        <textarea id="f-review" placeholder="This book made me ___..."></textarea>
+      </div>
+      <div class="form-g">
+        <label>Full Review <span class="opt">(optional — up to 2000 words, shown inside card)</span></label>
+        <textarea id="f-fullreview" class="tall" placeholder="Share your full thoughts here..." oninput="updateWordCount(this,'f-wc')"></textarea>
+        <div class="word-count" id="f-wc">0 / 2000 words</div>
+      </div>
+      <div class="form-g">
+        <label>Book Cover URL <span class="opt">(optional)</span></label>
+        <input type="url" id="f-cover" placeholder="https://..." oninput="previewCover(this.value)" />
+        <div class="cover-preview" id="f-cover-preview">
+          <img id="f-cover-img" src="" alt="cover preview" onerror="document.getElementById('f-cover-preview').style.display='none'" />
         </div>
+        <div class="form-hint">💡 <strong>Cách lấy URL ảnh bìa:</strong> Google Images → tìm tên sách → click ảnh → chuột phải → <em>"Copy image address"</em> → paste vào đây</div>
       </div>
       <button class="btn-primary btn-full" id="addBookBtn" onclick="submitBook()">Post My Book 📚</button>
     </div>
   </div>
 </div>
 
-<!-- ── TOAST ── -->
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── CONFIG ──────────────────────────────────────────────────────────────
-  const API = 'https://script.google.com/macros/s/AKfycbywGbYX9ElBiWhmW55tS2ACm4gPtk0cVY5fmOMiP_hg89oO-BfEcx8ljXk028Tcg-E7sA/exec';
+  var API = 'https://script.google.com/macros/s/AKfycbywGbYX9ElBiWhmW55tS2ACm4gPtk0cVY5fmOMiP_hg89oO-BfEcx8ljXk028Tcg-E7sA/exec';
 
-  // ── CONSTANTS ──────────────────────────────────────────────────────────
-  const CATEGORIES = [
+  var CATEGORIES = [
     "A book under 150 pages","A book by an Asian author","A book that changed how you think",
     "A book someone at Amanotes recommended","A book you've re-read more than once",
     "A book published in the last 2 years","A book outside your usual genre",
@@ -342,404 +326,323 @@
     "A book that made you laugh or cry","A book originally written in a non-English language",
     "A book you started but haven't finished (finish it now!)"
   ];
-  const BINGO_LINES = [
-    [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
-    [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],
-    [0,5,10,15],[3,6,9,12]
-  ];
-  const COVER_COLORS = [
-    "#7B4F2E","#4A7B6F","#5B6E9D","#7B4F6E","#6B7B4F",
-    "#9D6B3E","#4F6E8B","#7B6B4F","#4F8B6B","#8B5B4F",
-    "#5B8B4F","#6E4F8B","#8B4A5B","#4A6B8B","#7B7B4F"
-  ];
+  var BINGO_LINES = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]];
+  var COVER_COLORS = ["#7B4F2E","#4A7B6F","#5B6E9D","#7B4F6E","#6B7B4F","#9D6B3E","#4F6E8B","#7B6B4F","#4F8B6B","#8B5B4F","#5B8B4F","#6E4F8B","#8B4A5B","#4A6B8B","#7B7B4F"];
 
-  // ── STATE ──────────────────────────────────────────────────────────────
-  let BOOKS = [];
-  let currentBookId = null;
+  var BOOKS = [];
+  var currentBookId = null;
+  var editingBookId = null;
 
-  // ── API CALL (all via GET to avoid CORS issues) ────────────────────────
-  async function apiCall(params) {
-    const url = new URL(API);
-    Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, String(v)));
-    let res;
-    try {
-      res = await fetch(url.toString(), { redirect: 'follow' });
-    } catch(err) {
-      throw new Error('FETCH_FAILED: ' + err.message);
-    }
-    if (!res.ok) throw new Error('HTTP_' + res.status);
-    const text = await res.text();
-    // Detect auth redirect (Google login page returned instead of JSON)
-    if (text.trim().startsWith('<')) {
-      throw new Error('AUTH_REDIRECT: Script requires login. Redeploy with "Anyone" access.');
-    }
-    try {
-      return JSON.parse(text);
-    } catch(e) {
-      throw new Error('BAD_JSON: ' + text.slice(0, 120));
-    }
+  // ── API: all GET, robust redirect + error handling ─────────────────────
+  function apiCall(params) {
+    var url = new URL(API);
+    Object.keys(params).forEach(function(k) { url.searchParams.append(k, String(params[k])); });
+    return fetch(url.toString(), { redirect: 'follow' })
+      .then(function(res) { return res.text(); })
+      .then(function(text) {
+        try { return JSON.parse(text); }
+        catch(e) { throw new Error('Response parse error: ' + text.substring(0, 100)); }
+      });
   }
 
-  // ── LOCAL STORAGE (per-user state only) ───────────────────────────────
-  const LS = {
-    get likes()   { try { return JSON.parse(localStorage.getItem('bb_likes')  || '{}'); } catch { return {}; } },
-    set likes(v)  { localStorage.setItem('bb_likes',   JSON.stringify(v)); },
-    get borrows() { try { return JSON.parse(localStorage.getItem('bb_borrows')|| '{}'); } catch { return {}; } },
-    set borrows(v){ localStorage.setItem('bb_borrows', JSON.stringify(v)); },
-    get bingo()   { try { return JSON.parse(localStorage.getItem('bb_bingo')  || '{}'); } catch { return {}; } },
-    set bingo(v)  { localStorage.setItem('bb_bingo',   JSON.stringify(v)); }
+  // ── LOCAL STORAGE (per-user bingo + like/borrow state) ────────────────
+  var LS = {
+    get: function(k)  { try { return JSON.parse(localStorage.getItem(k) || '{}'); } catch(e) { return {}; } },
+    set: function(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
   };
 
   // ── HELPERS ────────────────────────────────────────────────────────────
-  function colorFor(id) { return COVER_COLORS[Math.abs(Number(id) - 1) % COVER_COLORS.length]; }
-  function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : ''; }
+  function colorFor(id) { return COVER_COLORS[Math.abs(Number(id)-1) % COVER_COLORS.length]; }
+  function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : ''; }
   function catShort(c) { return String(c||'').replace('⭐ ',''); }
   function today() { return new Date().toISOString().split('T')[0]; }
-  function escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function showToast(msg, type='success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'toast ' + type;
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function showToast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + (type||'');
     t.classList.add('show');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+    clearTimeout(t._t);
+    t._t = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  }
+  function updateWordCount(el, countId) {
+    var words = el.value.trim() === '' ? 0 : el.value.trim().split(/\s+/).length;
+    var el2 = document.getElementById(countId);
+    el2.textContent = words + ' / 2000 words';
+    el2.className = 'word-count' + (words > 2000 ? ' over' : '');
+  }
+  function previewCover(url) {
+    var wrap = document.getElementById('f-cover-preview');
+    var img  = document.getElementById('f-cover-img');
+    if (url) { img.src = url; wrap.style.display = 'block'; }
+    else      { wrap.style.display = 'none'; }
   }
 
   // ── TABS ───────────────────────────────────────────────────────────────
   function switchTab(id, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('tab-'+id).classList.add('active');
     if (btn) btn.classList.add('active');
     if (id === 'bingo') renderBingo();
     if (id === 'leaderboard') renderLeaderboard();
   }
 
   // ── BOOK FAIR ──────────────────────────────────────────────────────────
-  async function refreshBooks() {
-    document.getElementById('bookGrid').innerHTML = `
-      <div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>`;
+  function refreshBooks() {
+    document.getElementById('bookGrid').innerHTML = '<div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>';
     document.getElementById('bookCount').textContent = '';
-    try {
-      const data = await apiCall({ action: 'getBooks' });
-      if (Array.isArray(data)) {
-        BOOKS = data;
-        BOOKS.forEach(b => { if (!Array.isArray(b.returnReviews)) b.returnReviews = []; });
-      } else {
+    return apiCall({ action: 'getBooks' })
+      .then(function(data) {
+        BOOKS = Array.isArray(data) ? data : [];
+        BOOKS.forEach(function(b){ if (!Array.isArray(b.returnReviews)) b.returnReviews = []; });
+        renderBooks();
+        renderLeaderboard();
+      })
+      .catch(function(e) {
         BOOKS = [];
-        const errMsg = data && data.error ? data.error : JSON.stringify(data);
-        console.error('getBooks returned:', errMsg);
-        document.getElementById('bookGrid').innerHTML = `
-          <div class="empty-state">
-            <div class="big-emoji">⚠️</div>
-            <h3>Could not load books</h3>
-            <p style="font-size:12px;color:var(--text-3);margin-top:8px;word-break:break-all">Error: ${escHtml(errMsg)}</p>
-          </div>`;
-        return;
-      }
-    } catch(e) {
-      BOOKS = [];
-      document.getElementById('bookGrid').innerHTML = `
-        <div class="empty-state">
-          <div class="big-emoji">⚠️</div>
-          <h3>Connection error</h3>
-          <p style="font-size:12px;color:var(--text-3);margin-top:8px">Could not reach Google Sheets API.<br>${escHtml(e.message)}</p>
-        </div>`;
-      return;
-    }
-    renderBooks();
-    renderLeaderboard();
+        renderBooks();
+        showToast('Connection error: ' + e.message, 'error');
+      });
   }
 
   function renderBooks() {
-    const likes = LS.likes, borrows = LS.borrows;
-    const grid = document.getElementById('bookGrid');
-    document.getElementById('bookCount').textContent = `${BOOKS.length} book${BOOKS.length !== 1 ? 's' : ''} in the fair`;
+    var likes = LS.get('bb_likes'), borrows = LS.get('bb_borrows');
+    var grid = document.getElementById('bookGrid');
+    document.getElementById('bookCount').textContent = BOOKS.length + ' book' + (BOOKS.length !== 1 ? 's' : '') + ' in the fair';
     if (!BOOKS.length) {
-      grid.innerHTML = `<div class="empty-state"><div class="big-emoji">📚</div><h3>No books yet!</h3><p>Be the first to add a recommendation.</p></div>`;
+      grid.innerHTML = '<div class="empty-state"><div class="big-emoji">📚</div><h3>No books yet!</h3><p>Be the first to add a recommendation.</p></div>';
       return;
     }
-    grid.innerHTML = [...BOOKS].reverse().map(b => {
-      const col = colorFor(b.id);
-      const liked = !!likes[b.id], borrowed = !!borrows[b.id];
-      const coverHtml = b.coverUrl
-        ? `<img class="book-cover-img" src="${escHtml(b.coverUrl)}" onerror="this.style.display='none'" alt=""><div class="book-cover-overlay"></div>`
-        : '';
-      return `
-        <div class="book-card" onclick="openBook('${b.id}')">
-          <div class="book-cover" style="background:${col}">
-            ${coverHtml}
-            <div class="book-cover-text">
-              <div class="book-cover-title">${escHtml(b.title)}</div>
-              <div class="book-cover-author">${escHtml(b.author)}</div>
-            </div>
-          </div>
-          <div class="book-body">
-            <div class="cat-tag">${escHtml(catShort(b.category))}</div>
-            <div class="book-review">${escHtml(b.microReview)}</div>
-          </div>
-          <div class="book-footer">
-            <button class="act-btn ${liked?'liked':''}" id="l-${b.id}" onclick="event.stopPropagation();toggleLike('${b.id}')">
-              👍 <span id="lc-${b.id}">${b.likes||0}</span>
-            </button>
-            <button class="act-btn ${borrowed?'borrowed':''}" id="br-${b.id}" onclick="event.stopPropagation();toggleBorrow('${b.id}')">
-              📖 <span id="bc-${b.id}">${b.wantToBorrow||0}</span>
-            </button>
-          </div>
-        </div>`;
+    grid.innerHTML = BOOKS.slice().reverse().map(function(b) {
+      var col = colorFor(b.id);
+      var liked = !!likes[b.id], borrowed = !!borrows[b.id];
+      var coverHtml = b.coverUrl ? '<img class="book-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="book-cover-overlay"></div>' : '';
+      return '<div class="book-card" onclick="openBook(\''+b.id+'\')">'+
+        '<div class="book-cover" style="background:'+col+'">'+coverHtml+
+        '<div class="book-cover-text"><div class="book-cover-title">'+esc(b.title)+'</div><div class="book-cover-author">'+esc(b.author)+'</div></div></div>'+
+        '<div class="book-body"><div class="cat-tag">'+esc(catShort(b.category))+'</div><div class="book-review">'+esc(b.microReview)+'</div></div>'+
+        '<div class="book-footer">'+
+        '<button class="act-btn '+(liked?'liked':'')+'" id="l-'+b.id+'" onclick="event.stopPropagation();toggleLike(\''+b.id+'\')">👍 <span id="lc-'+b.id+'">'+(b.likes||0)+'</span></button>'+
+        '<button class="act-btn '+(borrowed?'borrowed':'')+'" id="br-'+b.id+'" onclick="event.stopPropagation();toggleBorrow(\''+b.id+'\')">📖 <span id="bc-'+b.id+'">'+(b.wantToBorrow||0)+'</span></button>'+
+        '</div></div>';
     }).join('');
   }
 
-  async function toggleLike(bookId) {
-    const likes = LS.likes;
-    const book = BOOKS.find(b => String(b.id) === String(bookId));
+  function toggleLike(bookId) {
+    var likes = LS.get('bb_likes');
+    var book = BOOKS.find(function(b){ return String(b.id)===String(bookId); });
     if (!book) return;
-    const delta = likes[bookId] ? -1 : 1;
-    if (delta === 1) { likes[bookId] = true;  book.likes = (book.likes||0) + 1; }
-    else             { delete likes[bookId];  book.likes = Math.max(0, (book.likes||0) - 1); }
-    LS.likes = likes;
-    // Optimistic UI update
-    const btn = document.getElementById(`l-${bookId}`);
-    const cnt = document.getElementById(`lc-${bookId}`);
-    if (btn) btn.className = `act-btn ${likes[bookId]?'liked':''}`;
-    if (cnt) cnt.textContent = book.likes;
-    if (String(currentBookId) === String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
+    var delta = likes[bookId] ? -1 : 1;
+    if (delta===1) { likes[bookId]=true; book.likes=(book.likes||0)+1; }
+    else           { delete likes[bookId]; book.likes=Math.max(0,(book.likes||0)-1); }
+    LS.set('bb_likes', likes);
+    var btn=document.getElementById('l-'+bookId), cnt=document.getElementById('lc-'+bookId);
+    if (btn) btn.className='act-btn '+(likes[bookId]?'liked':'');
+    if (cnt) cnt.textContent=book.likes;
+    if (String(currentBookId)===String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
     renderLeaderboard();
-    // Sync to Google Sheet
-    try { await apiCall({ action: 'like', bookId, delta }); }
-    catch(e) { showToast('Like could not be saved — try again.', 'error'); }
+    apiCall({ action:'like', bookId:bookId, delta:delta }).catch(function(){});
   }
 
-  async function toggleBorrow(bookId) {
-    const borrows = LS.borrows;
-    const book = BOOKS.find(b => String(b.id) === String(bookId));
+  function toggleBorrow(bookId) {
+    var borrows = LS.get('bb_borrows');
+    var book = BOOKS.find(function(b){ return String(b.id)===String(bookId); });
     if (!book) return;
-    const delta = borrows[bookId] ? -1 : 1;
-    if (delta === 1) { borrows[bookId] = true; book.wantToBorrow = (book.wantToBorrow||0) + 1; }
-    else             { delete borrows[bookId]; book.wantToBorrow = Math.max(0, (book.wantToBorrow||0) - 1); }
-    LS.borrows = borrows;
-    const btn = document.getElementById(`br-${bookId}`);
-    const cnt = document.getElementById(`bc-${bookId}`);
-    if (btn) btn.className = `act-btn ${borrows[bookId]?'borrowed':''}`;
-    if (cnt) cnt.textContent = book.wantToBorrow;
-    if (String(currentBookId) === String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
-    try { await apiCall({ action: 'borrow', bookId, delta }); }
-    catch(e) { showToast('Could not save borrow signal — try again.', 'error'); }
+    var delta = borrows[bookId] ? -1 : 1;
+    if (delta===1) { borrows[bookId]=true; book.wantToBorrow=(book.wantToBorrow||0)+1; }
+    else           { delete borrows[bookId]; book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1); }
+    LS.set('bb_borrows', borrows);
+    var btn=document.getElementById('br-'+bookId), cnt=document.getElementById('bc-'+bookId);
+    if (btn) btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
+    if (cnt) cnt.textContent=book.wantToBorrow;
+    if (String(currentBookId)===String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
+    apiCall({ action:'borrow', bookId:bookId, delta:delta }).catch(function(){});
   }
 
-  // ── BOOK DETAIL MODAL ─────────────────────────────────────────────────
-  function openBook(bookId) {
-    currentBookId = bookId;
-    renderBookModal(bookId);
-    openOverlay('bookOverlay');
-  }
+  // ── BOOK MODAL ─────────────────────────────────────────────────────────
+  function openBook(bookId) { currentBookId=bookId; renderBookModal(bookId); openOverlay('bookOverlay'); }
 
   function renderBookModal(bookId) {
-    const likes = LS.likes, borrows = LS.borrows;
-    const b = BOOKS.find(x => String(x.id) === String(bookId));
+    var likes=LS.get('bb_likes'), borrows=LS.get('bb_borrows');
+    var b=BOOKS.find(function(x){ return String(x.id)===String(bookId); });
     if (!b) return;
-    const col = colorFor(b.id);
-    const liked = !!likes[b.id], borrowed = !!borrows[b.id];
-    const coverHtml = b.coverUrl
-      ? `<img class="m-cover-img" src="${escHtml(b.coverUrl)}" onerror="this.style.display='none'" alt=""><div class="m-cover-overlay"></div>` : '';
-    const returns = Array.isArray(b.returnReviews) ? b.returnReviews : [];
-    const rrHtml = returns.length
-      ? returns.map(r => `
-          <div class="rr-item">
-            <div class="rr-reviewer">📖 ${escHtml(r.reviewerName||r.name)} · ${fmt(r.date)}</div>
-            <div class="rr-text">${escHtml(r.text)}</div>
-          </div>`).join('')
-      : `<p class="rr-empty">No return reviews yet — borrow it and be the first!</p>`;
+    var col=colorFor(b.id), liked=!!likes[b.id], borrowed=!!borrows[b.id];
+    var coverHtml=b.coverUrl?'<img class="m-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="m-cover-overlay"></div>':'';
+    var returns=Array.isArray(b.returnReviews)?b.returnReviews:[];
+    var rrHtml=returns.length?returns.map(function(r){
+      return '<div class="rr-item"><div class="rr-reviewer">📖 '+esc(r.reviewerName||r.name)+' · '+fmt(r.date)+'</div><div class="rr-text">'+esc(r.text)+'</div></div>';
+    }).join(''):'<p class="rr-empty">No return reviews yet — borrow it and be the first!</p>';
 
-    document.getElementById('bookModalContent').innerHTML = `
-      <div class="m-cover" style="background:${col}">
-        ${coverHtml}
-        <button class="m-close-btn" onclick="closeOverlay('bookOverlay')">✕</button>
-        <div class="m-cover-text">
-          <h2>${escHtml(b.title)}</h2>
-          <p>${escHtml(b.author)}</p>
-        </div>
-      </div>
-      <div class="m-body">
-        <div class="m-meta">
-          <div class="cat-tag">${escHtml(catShort(b.category))}</div>
-          <div class="m-recommender">by <span>${escHtml(b.recommender)}</span> · ${fmt(b.date)}</div>
-        </div>
-        <div class="m-review">${escHtml(b.microReview)}</div>
-        ${b.fullReview ? `<div class="m-full-review"><div class="m-full-label">📖 Full Review</div>${escHtml(b.fullReview)}</div>` : ''}
-        <div class="m-actions">
-          <button class="act-btn ${liked?'liked':''}" onclick="toggleLike('${bookId}')">👍 ${b.likes||0} Likes</button>
-          <button class="act-btn ${borrowed?'borrowed':''}" onclick="toggleBorrow('${bookId}')">📖 ${b.wantToBorrow||0} Want to Borrow</button>
-        </div>
-        <div class="return-section">
-          <h4>Return Reviews (${returns.length})</h4>
-          <div id="rrList">${rrHtml}</div>
-          <button class="act-btn" style="margin-top:12px;background:var(--accent-lighter);border-color:var(--accent-light);color:var(--accent)"
-            onclick="document.getElementById('rrForm').classList.toggle('hidden')">✍️ Post a Return Review</button>
-          <div class="rr-form hidden" id="rrForm">
-            <div class="form-g" style="margin-top:14px">
-              <label>Your Name</label>
-              <input type="text" id="rr-name" placeholder="Your name" />
-            </div>
-            <div class="form-g">
-              <label>Your Return Review</label>
-              <textarea id="rr-text" placeholder="I borrowed this book and it made me ___..."></textarea>
-            </div>
-            <button class="btn-primary" id="rrSubmitBtn" onclick="submitReturn('${bookId}')">Submit Review</button>
-          </div>
-        </div>
-      </div>`;
+    var fullReviewHtml = (b.fullReview && b.fullReview.toString().trim())
+      ? '<div class="m-full-review-label">📖 Full Review</div><div class="m-full-review">'+esc(b.fullReview)+'</div>'
+      : '';
+
+    document.getElementById('bookModalContent').innerHTML =
+      '<div class="m-cover" style="background:'+col+'">'+coverHtml+
+      '<button class="m-close-btn" onclick="closeOverlay(\'bookOverlay\')">✕</button>'+
+      '<div class="m-cover-text"><h2>'+esc(b.title)+'</h2><p>'+esc(b.author)+'</p></div></div>'+
+      '<div class="m-body">'+
+      '<div class="m-meta"><div class="cat-tag">'+esc(catShort(b.category))+'</div><div class="m-recommender">by <span>'+esc(b.recommender)+'</span> · '+fmt(b.date)+'</div></div>'+
+      '<div class="m-review">'+esc(b.microReview)+'</div>'+
+      fullReviewHtml+
+      '<div class="m-actions">'+
+      '<button class="act-btn '+(liked?'liked':'')+'" onclick="toggleLike(\''+bookId+'\')">👍 '+(b.likes||0)+' Likes</button>'+
+      '<button class="act-btn '+(borrowed?'borrowed':'')+'" onclick="toggleBorrow(\''+bookId+'\')">📖 '+(b.wantToBorrow||0)+' Want to Borrow</button>'+
+      '<button class="act-btn" onclick="openEditBook(\''+bookId+'\')" style="margin-left:auto">✏️ Edit</button>'+
+      '</div>'+
+      '<div class="return-section"><h4>Return Reviews ('+returns.length+')</h4>'+
+      '<div id="rrList">'+rrHtml+'</div>'+
+      '<button class="act-btn" style="margin-top:12px;background:var(--accent-lighter);border-color:var(--accent-light);color:var(--accent)" onclick="document.getElementById(\'rrForm\').classList.toggle(\'hidden\')">✍️ Post a Return Review</button>'+
+      '<div class="rr-form hidden" id="rrForm">'+
+      '<div class="form-g" style="margin-top:14px"><label>Your Name</label><input type="text" id="rr-name" placeholder="Your name" /></div>'+
+      '<div class="form-g"><label>Your Return Review</label><textarea id="rr-text" placeholder="I borrowed this book and it made me ___..."></textarea></div>'+
+      '<button class="btn-primary" id="rrSubmitBtn" onclick="submitReturn(\''+bookId+'\')">Submit Review</button>'+
+      '</div></div></div>';
   }
 
-  async function submitReturn(bookId) {
-    const name = document.getElementById('rr-name').value.trim();
-    const text = document.getElementById('rr-text').value.trim();
-    if (!name || !text) { alert('Please fill in your name and review.'); return; }
-    const btn = document.getElementById('rrSubmitBtn');
-    btn.textContent = 'Submitting...'; btn.disabled = true;
-    try {
-      await apiCall({ action: 'addReturn', bookId, reviewerName: name, text, date: today() });
-      const book = BOOKS.find(b => String(b.id) === String(bookId));
-      if (book) {
-        if (!book.returnReviews) book.returnReviews = [];
-        book.returnReviews.push({ reviewerName: name, text, date: today() });
-      }
-      renderBookModal(bookId);
-      renderLeaderboard();
-      showToast('Return review posted! +2 pts for you and the recommender 🎉');
-    } catch(e) {
-      showToast('Could not submit review — try again.', 'error');
-      btn.textContent = 'Submit Review'; btn.disabled = false;
+  function submitReturn(bookId) {
+    var name=document.getElementById('rr-name').value.trim();
+    var text=document.getElementById('rr-text').value.trim();
+    if (!name||!text) { alert('Please fill in your name and review.'); return; }
+    var btn=document.getElementById('rrSubmitBtn');
+    btn.textContent='Submitting...'; btn.disabled=true;
+    apiCall({ action:'addReturn', bookId:bookId, reviewerName:name, text:text, date:today() })
+      .then(function() {
+        var book=BOOKS.find(function(b){ return String(b.id)===String(bookId); });
+        if (book) { if(!book.returnReviews) book.returnReviews=[]; book.returnReviews.push({reviewerName:name,text:text,date:today()}); }
+        renderBookModal(bookId); renderLeaderboard();
+        showToast('Return review posted! +2 pts for you and the recommender 🎉');
+      })
+      .catch(function(e) {
+        showToast('Could not submit: '+e.message, 'error');
+        btn.textContent='Submit Review'; btn.disabled=false;
+      });
+  }
+
+  // ── ADD / EDIT BOOK ────────────────────────────────────────────────────
+  function openAddBook() {
+    editingBookId = null;
+    document.querySelector('#addOverlay .m-header h2').textContent = '📝 Add Your Book';
+    document.getElementById('addBookBtn').textContent = 'Post My Book 📚';
+    ['f-title','f-author','f-name','f-review','f-fullreview','f-cover'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('f-category').selectedIndex = 0;
+    document.getElementById('f-cover-preview').style.display = 'none';
+    document.getElementById('f-wc').textContent = '0 / 2000 words';
+    openOverlay('addOverlay');
+  }
+
+  function openEditBook(bookId) {
+    var b = BOOKS.find(function(x){ return String(x.id)===String(bookId); });
+    if (!b) return;
+    editingBookId = bookId;
+    closeOverlay('bookOverlay');
+    document.querySelector('#addOverlay .m-header h2').textContent = '✏️ Edit Your Post';
+    document.getElementById('addBookBtn').textContent = 'Save Changes ✓';
+    document.getElementById('f-title').value   = b.title || '';
+    document.getElementById('f-author').value  = b.author || '';
+    document.getElementById('f-name').value    = b.recommender || '';
+    document.getElementById('f-review').value  = b.microReview || '';
+    document.getElementById('f-fullreview').value = b.fullReview || '';
+    document.getElementById('f-cover').value   = b.coverUrl || '';
+    // Set category dropdown
+    var sel = document.getElementById('f-category');
+    for (var i=0; i<sel.options.length; i++) {
+      if (sel.options[i].value === b.category) { sel.selectedIndex = i; break; }
     }
+    // Show cover preview if exists
+    if (b.coverUrl) { previewCover(b.coverUrl); }
+    else { document.getElementById('f-cover-preview').style.display = 'none'; }
+    // Update word count
+    updateWordCount(document.getElementById('f-fullreview'), 'f-wc');
+    openOverlay('addOverlay');
   }
 
-  // ── IMAGE HELPERS ─────────────────────────────────────────────────────
-  function previewCover(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      document.getElementById('coverPreviewImg').src = e.target.result;
-      document.getElementById('coverPreview').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+  function submitBook() {
+    var title  = document.getElementById('f-title').value.trim();
+    var author = document.getElementById('f-author').value.trim();
+    var cat    = document.getElementById('f-category').value;
+    var name   = document.getElementById('f-name').value.trim();
+    var review = document.getElementById('f-review').value.trim();
+    var full   = document.getElementById('f-fullreview').value.trim();
+    var cover  = document.getElementById('f-cover').value.trim();
+    if (!title||!author||!cat||!name||!review) { alert('Please fill in all required fields.'); return; }
+    var wordCount = full==='' ? 0 : full.split(/\s+/).length;
+    if (wordCount > 2000) { alert('Full review exceeds 2000 words. Please shorten it.'); return; }
+    var btn=document.getElementById('addBookBtn');
+    btn.textContent = editingBookId ? 'Saving...' : 'Posting...'; btn.disabled=true;
+    var isEdit = !!editingBookId;
+    var params = isEdit
+      ? { action:'editBook', bookId:editingBookId, title:title, author:author, category:cat, recommender:name, microReview:review, fullReview:full, coverUrl:cover||'' }
+      : { action:'addBook',  title:title, author:author, category:cat, recommender:name, microReview:review, fullReview:full, coverUrl:cover||'', date:today() };
+    apiCall(params)
+      .then(function(res) {
+        if (res && res.error) throw new Error(res.error);
+        ['f-title','f-author','f-name','f-review','f-fullreview','f-cover'].forEach(function(id){ document.getElementById(id).value=''; });
+        document.getElementById('f-category').selectedIndex=0;
+        document.getElementById('f-cover-preview').style.display='none';
+        document.getElementById('f-wc').textContent='0 / 2000 words';
+        editingBookId = null;
+        closeOverlay('addOverlay');
+        showToast(isEdit ? 'Post updated! ✓' : 'Book added! +2 pts for you 📚');
+        return refreshBooks();
+      })
+      .catch(function(e) {
+        showToast('Could not ' + (isEdit?'save':'add') + ' book: ' + e.message, 'error');
+      })
+      .finally(function() {
+        btn.textContent = 'Post My Book 📚'; btn.disabled=false;
+      });
   }
 
-  function compressImage(file, maxSize = 280, quality = 0.72) {
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1);
-          canvas.width  = Math.round(img.width  * ratio);
-          canvas.height = Math.round(img.height * ratio);
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // ── ADD BOOK ───────────────────────────────────────────────────────────
-  function openAddBook() { openOverlay('addOverlay'); }
-
-  async function submitBook() {
-    const title      = document.getElementById('f-title').value.trim();
-    const author     = document.getElementById('f-author').value.trim();
-    const cat        = document.getElementById('f-category').value;
-    const name       = document.getElementById('f-name').value.trim();
-    const review     = document.getElementById('f-review').value.trim();
-    const fullReview = document.getElementById('f-fullreview').value.trim();
-    const fileInput  = document.getElementById('f-cover');
-    if (!title || !author || !cat || !name || !review) { alert('Please fill in all required fields.'); return; }
-    const wordCount = fullReview.split(/\s+/).filter(Boolean).length;
-    if (wordCount > 2000) { alert(`Full review is ${wordCount} words — please keep it under 2000.`); return; }
-    const btn = document.getElementById('addBookBtn');
-    btn.textContent = 'Posting...'; btn.disabled = true;
-    try {
-      let coverData = '';
-      if (fileInput.files && fileInput.files[0]) {
-        btn.textContent = 'Compressing image...';
-        coverData = await compressImage(fileInput.files[0]);
-      }
-      btn.textContent = 'Saving...';
-      await apiCall({ action: 'addBook', title, author, category: cat, recommender: name, microReview: review, fullReview: fullReview || '', coverUrl: coverData, date: today() });
-      ['f-title','f-author','f-name','f-review','f-fullreview'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('f-category').selectedIndex = 0;
-      fileInput.value = '';
-      document.getElementById('coverPreview').style.display = 'none';
-      closeOverlay('addOverlay');
-      showToast('Book added! +2 pts for you 📚');
-      await refreshBooks();
-    } catch(e) {
-      showToast('Could not add book — try again.', 'error');
-    } finally {
-      btn.textContent = 'Post My Book 📚'; btn.disabled = false;
-    }
-  }
-
-  // ── BINGO CARD (per-user, stays in localStorage) ──────────────────────
+  // ── BINGO ──────────────────────────────────────────────────────────────
   function renderBingo() {
-    const state = LS.bingo;
-    const grid  = document.getElementById('bingoGrid');
-    grid.innerHTML = CATEGORIES.map((cat, i) => {
-      const isWild = cat.startsWith('⭐'), done = !!state[i];
-      return `<div class="bingo-cell ${done?'done':''} ${isWild?'wild':''}" onclick="toggleSquare(${i})">${escHtml(cat)}</div>`;
+    var state=LS.get('bb_bingo');
+    var grid=document.getElementById('bingoGrid');
+    grid.innerHTML=CATEGORIES.map(function(cat,i){
+      var isWild=cat.startsWith('⭐'), done=!!state[i];
+      return '<div class="bingo-cell'+(done?' done':'')+(isWild?' wild':'')+'" onclick="toggleSquare('+i+')">'+esc(cat)+'</div>';
     }).join('');
-    const done  = Object.values(state).filter(Boolean).length;
-    const lines = BINGO_LINES.filter(l => l.every(i => state[i])).length;
-    document.getElementById('bingoProgress').innerHTML =
-      `<strong>${done}/16</strong> squares marked · <strong>${lines}</strong> line${lines!==1?'s':''} completed${lines>0?' 🎉':''}`;
+    var done=Object.values(state).filter(Boolean).length;
+    var lines=BINGO_LINES.filter(function(l){ return l.every(function(i){ return state[i]; }); }).length;
+    document.getElementById('bingoProgress').innerHTML='<strong>'+done+'/16</strong> squares marked · <strong>'+lines+'</strong> line'+(lines!==1?'s':'')+' completed'+(lines>0?' 🎉':'');
   }
 
   function toggleSquare(i) {
-    const state = LS.bingo; state[i] = !state[i]; LS.bingo = state; renderBingo();
+    var state=LS.get('bb_bingo'); state[i]=!state[i]; LS.set('bb_bingo',state); renderBingo();
   }
 
   // ── LEADERBOARD ────────────────────────────────────────────────────────
   function renderLeaderboard() {
-    const pp = {};
-    BOOKS.forEach(b => {
-      if (!pp[b.recommender]) pp[b.recommender] = { name: b.recommender, posted: 0, received: 0, pts: 0 };
+    var pp={};
+    BOOKS.forEach(function(b){
+      if (!pp[b.recommender]) pp[b.recommender]={name:b.recommender,posted:0,received:0,pts:0};
       pp[b.recommender].posted++;
-      pp[b.recommender].pts += 2 + (b.likes||0) * 0.5 + (b.returnReviews||[]).length * 2;
-      pp[b.recommender].received += (b.returnReviews||[]).length;
-      (b.returnReviews||[]).forEach(r => {
-        const n = r.reviewerName || r.name || '';
-        if (!pp[n]) pp[n] = { name: n, posted: 0, received: 0, pts: 0 };
-        pp[n].pts += 2;
+      pp[b.recommender].pts+=2+(b.likes||0)*0.5+(b.returnReviews||[]).length*2;
+      pp[b.recommender].received+=(b.returnReviews||[]).length;
+      (b.returnReviews||[]).forEach(function(r){
+        var n=r.reviewerName||r.name||'';
+        if (!pp[n]) pp[n]={name:n,posted:0,received:0,pts:0};
+        pp[n].pts+=2;
       });
     });
-    const sorted = Object.values(pp).sort((a, b) => b.pts - a.pts);
-    const medals = ['🥇','🥈','🥉'];
-    const el = document.getElementById('lbTable');
-    if (!sorted.length) { el.innerHTML = `<div class="lb-empty">No entries yet — add your first book!</div>`; return; }
-    el.innerHTML = `
-      <div class="lb-row lb-head"><div></div><div>Participant</div><div style="text-align:right">Books</div><div class="lb-sec" style="text-align:right">Returns</div><div style="text-align:right">Points</div></div>
-      ${sorted.map((p, i) => `
-        <div class="lb-row">
-          <div class="lb-rank">${medals[i] || i+1}</div>
-          <div class="lb-name">${escHtml(p.name)}</div>
-          <div class="lb-sec">${p.posted}</div>
-          <div class="lb-sec">${p.received}</div>
-          <div class="lb-pts">${p.pts % 1 === 0 ? p.pts : p.pts.toFixed(1)}</div>
-        </div>`).join('')}`;
+    var sorted=Object.values(pp).sort(function(a,b){ return b.pts-a.pts; });
+    var medals=['🥇','🥈','🥉'];
+    var el=document.getElementById('lbTable');
+    if (!sorted.length) { el.innerHTML='<div class="lb-empty">No entries yet — add your first book!</div>'; return; }
+    el.innerHTML='<div class="lb-row lb-head"><div></div><div>Participant</div><div style="text-align:right">Books</div><div class="lb-sec" style="text-align:right">Returns</div><div style="text-align:right">Points</div></div>'+
+      sorted.map(function(p,i){
+        return '<div class="lb-row"><div class="lb-rank">'+(medals[i]||i+1)+'</div><div class="lb-name">'+esc(p.name)+'</div><div class="lb-sec">'+p.posted+'</div><div class="lb-sec">'+p.received+'</div><div class="lb-pts">'+(p.pts%1===0?p.pts:p.pts.toFixed(1))+'</div></div>';
+      }).join('');
   }
 
   // ── OVERLAYS ───────────────────────────────────────────────────────────
-  function openOverlay(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeOverlay(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-  function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeOverlay(id); }
+  function openOverlay(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeOverlay(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  function overlayClose(e,id) { if(e.target===document.getElementById(id)) closeOverlay(id); }
 
   // ── INIT ───────────────────────────────────────────────────────────────
   refreshBooks();
   renderBingo();
 </script>
-
 </body>
 </html>
