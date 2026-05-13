@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +16,7 @@
       --shadow-md: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.06);
       --shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 24px 48px rgba(0,0,0,0.08);
       --r: 12px; --r-sm: 8px; --r-pill: 100px;
+      --gold: #b8960c; --gold-light: #fff9e8; --gold-border: #e8c84a;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -43,10 +45,11 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-state p { font-size: 15px; color: var(--text-2); font-weight: 500; }
 
-    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1d1d1f; color: white; padding: 12px 22px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; z-index: 600; opacity: 0; transition: all 0.3s ease; white-space: nowrap; box-shadow: var(--shadow-md); pointer-events: none; max-width: 90vw; white-space: normal; text-align: center; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1d1d1f; color: white; padding: 12px 22px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; z-index: 600; opacity: 0; transition: all 0.3s ease; box-shadow: var(--shadow-md); pointer-events: none; max-width: 90vw; white-space: normal; text-align: center; }
     .toast.error { background: #c0392b; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── BOOK FAIR ── */
     .fair-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .fair-toolbar span { font-size: 13px; color: var(--text-2); }
     .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
@@ -73,6 +76,7 @@
     .empty-state h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
     .empty-state p { font-size: 15px; color: var(--text-2); }
 
+    /* ── BINGO ── */
     .bingo-wrap { max-width: 620px; margin: 0 auto; }
     .section-header { text-align: center; margin-bottom: 24px; }
     .section-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
@@ -85,16 +89,44 @@
     .bingo-cell:hover { border-color: var(--accent); background: var(--accent-lighter); }
     .bingo-cell.done { background: var(--accent); border-color: var(--accent); color: white; font-weight: 500; }
     .bingo-cell.done::after { content: "✓"; position: absolute; top: 5px; right: 7px; font-size: 12px; font-weight: 700; opacity: 0.75; }
-    .bingo-cell.wild { background: linear-gradient(135deg, #fff9e8, #ffedbb); border-color: #e8c84a; font-weight: 600; font-size: 12px; }
-    .bingo-cell.wild.done { background: #b8960c; border-color: #b8960c; }
+    .bingo-cell.wild { background: linear-gradient(135deg, #fff9e8, #ffedbb); border-color: var(--gold-border); font-weight: 600; font-size: 12px; }
+    .bingo-cell.wild.done { background: var(--gold); border-color: var(--gold); color: white; }
 
+    /* Bingo claim banner */
+    .bingo-claim-banner { background: linear-gradient(135deg, var(--gold-light), #ffedbb); border: 1.5px solid var(--gold-border); border-radius: var(--r); padding: 16px 20px; margin-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; animation: fadeUp 0.3s ease both; }
+    .bingo-claim-text { font-size: 14px; font-weight: 600; color: #7a6100; }
+    .bingo-claim-text span { display: block; font-size: 12px; color: #9a8020; font-weight: 400; margin-top: 3px; }
+    .btn-gold { background: var(--gold); color: white; border: none; padding: 9px 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; font-family: inherit; }
+    .btn-gold:hover { background: #9a7d0a; }
+    .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Bingo rewards info */
+    .bingo-rewards { background: var(--surface); border-radius: var(--r); padding: 14px 18px; margin-top: 16px; box-shadow: var(--shadow-sm); }
+    .bingo-rewards h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 10px; }
+    .reward-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .reward-row:last-child { border-bottom: none; }
+
+    /* Celebration modal */
+    .celebration-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 400; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .celebration-overlay.open { opacity: 1; pointer-events: all; }
+    .celebration-card { background: white; border-radius: 20px; padding: 36px 40px; text-align: center; box-shadow: var(--shadow-lg); max-width: 360px; width: 100%; transform: scale(0.85); transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+    .celebration-overlay.open .celebration-card { transform: scale(1); }
+    .celebration-emoji { font-size: 56px; margin-bottom: 14px; line-height: 1; }
+    .celebration-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .celebration-sub { font-size: 14px; color: var(--text-2); margin-bottom: 6px; line-height: 1.6; }
+    .celebration-pts { font-size: 28px; font-weight: 800; color: var(--gold); margin: 12px 0; }
+    .celebration-note { font-size: 12px; color: var(--text-3); margin-bottom: 20px; }
+
+    /* ── LEADERBOARD ── */
     .lb-wrap { max-width: 680px; margin: 0 auto; }
     .section-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
     .scoring-box { background: var(--surface); border-radius: var(--r); padding: 18px 22px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
     .scoring-box h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 12px; }
     .rule-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .rule-row:last-child { border-bottom: none; }
+    .rule-row.gold-rule { background: var(--gold-light); margin: 0 -22px; padding: 8px 22px; border-radius: 0; }
     .pts-badge { background: var(--accent-light); color: var(--accent); padding: 2px 10px; border-radius: var(--r-pill); font-size: 12px; font-weight: 600; }
+    .pts-badge.gold { background: linear-gradient(135deg, var(--gold-light), #ffedbb); color: var(--gold); border: 1px solid var(--gold-border); }
     .lb-table { background: var(--surface); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); }
     .lb-row { display: grid; grid-template-columns: 44px 1fr 72px 72px 72px; align-items: center; padding: 13px 20px; border-bottom: 1px solid var(--border); font-size: 14px; transition: background 0.15s; }
     .lb-row:last-child { border-bottom: none; }
@@ -105,7 +137,10 @@
     .lb-pts { font-weight: 700; color: var(--accent); text-align: right; }
     .lb-sec { color: var(--text-2); text-align: right; font-size: 13px; }
     .lb-empty { text-align: center; padding: 32px; color: var(--text-2); font-size: 14px; }
+    /* Bingo Master badge */
+    .badge-bingo { display: inline-block; background: linear-gradient(135deg, var(--gold-light), #ffedbb); border: 1px solid var(--gold-border); color: var(--gold); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: var(--r-pill); margin-left: 5px; vertical-align: middle; white-space: nowrap; }
 
+    /* ── HOW TO PLAY ── */
     .how-wrap { max-width: 660px; margin: 0 auto; }
     .steps { margin-bottom: 32px; }
     .step { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--border); }
@@ -114,12 +149,16 @@
     .step h3 { font-size: 15px; font-weight: 600; margin-bottom: 5px; }
     .step p { font-size: 14px; color: var(--text-2); line-height: 1.6; }
     .step p strong { color: var(--text); }
-    .awards-row { display: flex; gap: 14px; }
+    .awards-row { display: flex; gap: 14px; margin-bottom: 16px; }
     .award-card { flex: 1; background: var(--surface); border-radius: var(--r); padding: 20px 16px; text-align: center; box-shadow: var(--shadow-sm); }
     .award-card .medal { font-size: 30px; margin-bottom: 8px; }
     .award-card h4 { font-size: 14px; font-weight: 600; }
     .award-card p { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+    .bingo-award-box { background: linear-gradient(135deg, var(--gold-light), #fff3cc); border: 1.5px solid var(--gold-border); border-radius: var(--r); padding: 16px 20px; }
+    .bingo-award-box h4 { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+    .bingo-award-row { display: flex; justify-content: space-between; font-size: 13px; color: #7a6100; padding: 4px 0; }
 
+    /* ── MODALS ── */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
     .overlay.open { opacity: 1; pointer-events: all; }
     .modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: scale(0.95) translateY(10px); transition: transform 0.25s; }
@@ -139,7 +178,7 @@
     .m-review { font-size: 15px; color: var(--text); line-height: 1.7; margin-bottom: 14px; }
     .m-full-review { background: var(--accent-lighter); border-left: 3px solid var(--accent-light); border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 14px 16px; margin-bottom: 18px; font-size: 14px; color: var(--text); line-height: 1.8; white-space: pre-wrap; }
     .m-full-review-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
-    .m-actions { display: flex; gap: 10px; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .m-actions { display: flex; gap: 10px; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; }
     .return-section h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 12px; }
     .rr-item { background: var(--bg); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 8px; }
     .rr-reviewer { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
@@ -152,6 +191,7 @@
     .m-close-x { background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer; padding: 4px; }
     .m-close-x:hover { color: var(--text); }
 
+    /* ── FORMS ── */
     .form-g { margin-bottom: 15px; }
     .form-g label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
     .form-g label .opt { font-weight: 400; color: var(--text-3); }
@@ -196,16 +236,18 @@
 </div>
 
 <main>
+  <!-- BOOK FAIR -->
   <div class="tab-panel active" id="tab-fair">
     <div class="fair-toolbar">
       <span id="bookCount"></span>
-      <button class="act-btn" onclick="refreshBooks()" style="font-size:13px">🔄 Refresh</button>
+      <button class="act-btn" onclick="refreshAll()" style="font-size:13px">🔄 Refresh</button>
     </div>
     <div class="book-grid" id="bookGrid">
       <div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>
     </div>
   </div>
 
+  <!-- BINGO CARD -->
   <div class="tab-panel" id="tab-bingo">
     <div class="bingo-wrap">
       <div class="section-header">
@@ -214,9 +256,16 @@
       </div>
       <div class="bingo-progress-wrap"><div class="bingo-progress" id="bingoProgress">0/16 squares marked · 0 lines completed</div></div>
       <div class="bingo-grid" id="bingoGrid"></div>
+      <div id="bingoClaim"></div>
+      <div class="bingo-rewards">
+        <h4>🎁 Bingo Rewards</h4>
+        <div class="reward-row"><span>🎯 Complete 1 line (row / column / diagonal)</span><span class="pts-badge gold">+5 pts</span></div>
+        <div class="reward-row"><span>🏆 Complete the full card (16/16)</span><span class="pts-badge gold">+20 pts + 🎴 Bingo Master</span></div>
+      </div>
     </div>
   </div>
 
+  <!-- LEADERBOARD -->
   <div class="tab-panel" id="tab-leaderboard">
     <div class="lb-wrap">
       <div class="section-title">🏆 Leaderboard</div>
@@ -224,13 +273,16 @@
         <h3>How points are earned</h3>
         <div class="rule-row"><span>📝 Post a micro-review</span><span class="pts-badge">+2 pts</span></div>
         <div class="rule-row"><span>👍 Receive a Like on your post</span><span class="pts-badge">+0.5 pts</span></div>
-        <div class="rule-row"><span>🔄 Receive a returned review on your book</span><span class="pts-badge">+2 pts</span></div>
-        <div class="rule-row"><span>📖 Post a return review (borrower)</span><span class="pts-badge">+2 pts</span></div>
+        <div class="rule-row"><span>🔄 Receive a returned review</span><span class="pts-badge">+2 pts</span></div>
+        <div class="rule-row"><span>📖 Post a return review</span><span class="pts-badge">+2 pts</span></div>
+        <div class="rule-row gold-rule"><span>🎯 Complete a bingo line</span><span class="pts-badge gold">+5 pts</span></div>
+        <div class="rule-row gold-rule"><span>🏆 Complete full bingo card</span><span class="pts-badge gold">+20 pts</span></div>
       </div>
       <div class="lb-table" id="lbTable"><div class="lb-empty">Loading...</div></div>
     </div>
   </div>
 
+  <!-- HOW TO PLAY -->
   <div class="tab-panel" id="tab-how">
     <div class="how-wrap">
       <div class="section-title">❓ How to Play</div>
@@ -238,13 +290,18 @@
         <div class="step"><div class="step-num">1</div><div><h3>📝 Recommend a book</h3><p>Click <strong>"+ Add Your Book"</strong>. Pick a bingo category, write a micro-review (tagline) and optionally a longer full review. You earn <strong>2 points</strong> instantly.</p></div></div>
         <div class="step"><div class="step-num">2</div><div><h3>👍 Like books you love</h3><p>Browse the Book Fair. Hit 👍 on anything that resonates. Every like earns the recommender <strong>0.5 points</strong>.</p></div></div>
         <div class="step"><div class="step-num">3</div><div><h3>📖 Borrow & Return</h3><p>Hit <strong>"📖 Want to Borrow"</strong> to signal interest, then grab the physical copy from the recommender. After reading, post a <strong>return review</strong>. You and the recommender each earn <strong>2 points</strong>.</p></div></div>
-        <div class="step"><div class="step-num">4</div><div><h3>🎴 Complete your Bingo Card</h3><p>Mark categories as you post for them. Complete any <strong>row, column, or diagonal</strong> to finish a line!</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>🎴 Complete your Bingo Card</h3><p>Mark categories as you post for them. Complete any <strong>row, column, or diagonal</strong> → claim <strong>+5 pts</strong>. Complete all 16 squares → claim <strong>+20 pts</strong> and the <strong>🎴 Bingo Master</strong> badge!</p></div></div>
         <div class="step"><div class="step-num">5</div><div><h3>📌 Key rules</h3><p>Duplicate book posts are welcome. "Want to Borrow" is a social signal only. No rating system — share freely, judgment-free!</p></div></div>
       </div>
       <div class="awards-row">
-        <div class="award-card"><div class="medal">🥇</div><h4>Top Scorer</h4><p>Book voucher</p></div>
-        <div class="award-card"><div class="medal">🥈</div><h4>2nd Place</h4><p>Book voucher</p></div>
-        <div class="award-card"><div class="medal">🥉</div><h4>3rd Place</h4><p>Book voucher</p></div>
+        <div class="award-card"><div class="medal">🥇</div><h4>Top Scorer</h4><p>Book voucher 1M VND</p></div>
+        <div class="award-card"><div class="medal">🥈</div><h4>2nd Place</h4><p>Book voucher 500K VND</p></div>
+        <div class="award-card"><div class="medal">🥉</div><h4>3rd Place</h4><p>Book voucher 200K VND</p></div>
+      </div>
+      <div class="bingo-award-box">
+        <h4>🎴 Bingo Bonuses</h4>
+        <div class="bingo-award-row"><span>Complete 1 line</span><span>+5 pts per line (claimable)</span></div>
+        <div class="bingo-award-row"><span>Complete full card (16/16)</span><span>+20 pts + Bingo Master badge</span></div>
       </div>
       <p style="font-size:12px;color:var(--text-3);text-align:center;margin-top:16px">Funded by the Trade Union budget</p>
     </div>
@@ -256,11 +313,11 @@
   <div class="modal" id="bookModalContent"></div>
 </div>
 
-<!-- ADD BOOK MODAL -->
+<!-- ADD / EDIT BOOK MODAL -->
 <div class="overlay" id="addOverlay" onclick="overlayClose(event,'addOverlay')">
   <div class="modal">
     <div class="m-header">
-      <h2>📝 Add Your Book</h2>
+      <h2 id="addModalTitle">📝 Add Your Book</h2>
       <button class="m-close-x" onclick="closeOverlay('addOverlay')">✕</button>
     </div>
     <div class="m-body">
@@ -289,25 +346,47 @@
         </select>
       </div>
       <div class="form-g"><label>Your Name *</label><input type="text" id="f-name" placeholder="e.g. Ly Dang" /></div>
+      <div class="form-g"><label>Micro-Review * <span class="opt">(1–3 sentences — shown on card)</span></label><textarea id="f-review" placeholder="This book made me ___..."></textarea></div>
       <div class="form-g">
-        <label>Micro-Review * <span class="opt">(1–3 sentences — shown on card)</span></label>
-        <textarea id="f-review" placeholder="This book made me ___..."></textarea>
-      </div>
-      <div class="form-g">
-        <label>Full Review <span class="opt">(optional — up to 2000 words, shown inside card)</span></label>
+        <label>Full Review <span class="opt">(optional — up to 2000 words)</span></label>
         <textarea id="f-fullreview" class="tall" placeholder="Share your full thoughts here..." oninput="updateWordCount(this,'f-wc')"></textarea>
         <div class="word-count" id="f-wc">0 / 2000 words</div>
       </div>
       <div class="form-g">
         <label>Book Cover URL <span class="opt">(optional)</span></label>
         <input type="url" id="f-cover" placeholder="https://..." oninput="previewCover(this.value)" />
-        <div class="cover-preview" id="f-cover-preview">
-          <img id="f-cover-img" src="" alt="cover preview" onerror="document.getElementById('f-cover-preview').style.display='none'" />
-        </div>
-        <div class="form-hint">💡 <strong>Cách lấy URL ảnh bìa:</strong> Google Images → tìm tên sách → click ảnh → chuột phải → <em>"Copy image address"</em> → paste vào đây</div>
+        <div class="cover-preview" id="f-cover-preview"><img id="f-cover-img" src="" alt="cover preview" onerror="document.getElementById('f-cover-preview').style.display='none'" /></div>
+        <div class="form-hint">💡 Google Images → tìm tên sách → click ảnh → chuột phải → <em>"Copy image address"</em></div>
       </div>
       <button class="btn-primary btn-full" id="addBookBtn" onclick="submitBook()">Post My Book 📚</button>
     </div>
+  </div>
+</div>
+
+<!-- CLAIM BINGO BONUS MODAL -->
+<div class="overlay" id="claimOverlay" onclick="overlayClose(event,'claimOverlay')">
+  <div class="modal" style="max-width:420px">
+    <div class="m-header">
+      <h2 id="claimModalTitle">🎴 Claim Bingo Bonus</h2>
+      <button class="m-close-x" onclick="closeOverlay('claimOverlay')">✕</button>
+    </div>
+    <div class="m-body">
+      <p style="font-size:14px;color:var(--text-2);margin-bottom:18px" id="claimModalDesc"></p>
+      <div class="form-g"><label>Your Name *</label><input type="text" id="claim-name" placeholder="e.g. Ly Dang" /></div>
+      <button class="btn-gold btn-full" id="claimBtn" onclick="submitClaim()" style="margin-top:4px">Claim My Bonus 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATION OVERLAY -->
+<div class="celebration-overlay" id="celebrationOverlay" onclick="closeCelebration()">
+  <div class="celebration-card" onclick="event.stopPropagation()">
+    <div class="celebration-emoji" id="celebEmoji">🎉</div>
+    <div class="celebration-title" id="celebTitle">Bingo!</div>
+    <div class="celebration-sub" id="celebSub"></div>
+    <div class="celebration-pts" id="celebPts"></div>
+    <div class="celebration-note" id="celebNote"></div>
+    <button class="btn-primary" onclick="closeCelebration()">Awesome! 🙌</button>
   </div>
 </div>
 
@@ -330,93 +409,83 @@
   var COVER_COLORS = ["#7B4F2E","#4A7B6F","#5B6E9D","#7B4F6E","#6B7B4F","#9D6B3E","#4F6E8B","#7B6B4F","#4F8B6B","#8B5B4F","#5B8B4F","#6E4F8B","#8B4A5B","#4A6B8B","#7B7B4F"];
 
   var BOOKS = [];
+  var BINGO_BONUSES = []; // [{name, type:'line'|'fullcard', lines, date}]
   var currentBookId = null;
   var editingBookId = null;
+  var pendingClaimType = null; // 'line' or 'fullcard'
+  var pendingClaimLines = 0;
 
-  // ── API: all GET, robust redirect + error handling ─────────────────────
+  // ── API ────────────────────────────────────────────────────────────────
   function apiCall(params) {
     var url = new URL(API);
-    Object.keys(params).forEach(function(k) { url.searchParams.append(k, String(params[k])); });
-    return fetch(url.toString(), { redirect: 'follow' })
-      .then(function(res) { return res.text(); })
-      .then(function(text) {
-        try { return JSON.parse(text); }
-        catch(e) { throw new Error('Response parse error: ' + text.substring(0, 100)); }
-      });
+    Object.keys(params).forEach(function(k){ url.searchParams.append(k, String(params[k])); });
+    return fetch(url.toString(), { redirect:'follow' })
+      .then(function(res){ return res.text(); })
+      .then(function(text){ try { return JSON.parse(text); } catch(e){ throw new Error('Parse error: '+text.substring(0,80)); } });
   }
 
-  // ── LOCAL STORAGE (per-user bingo + like/borrow state) ────────────────
+  // ── LOCAL STORAGE ──────────────────────────────────────────────────────
   var LS = {
-    get: function(k)  { try { return JSON.parse(localStorage.getItem(k) || '{}'); } catch(e) { return {}; } },
-    set: function(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+    get: function(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch(e){ return {}; } },
+    set: function(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
   };
 
   // ── HELPERS ────────────────────────────────────────────────────────────
-  function colorFor(id) { return COVER_COLORS[Math.abs(Number(id)-1) % COVER_COLORS.length]; }
-  function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : ''; }
-  function catShort(c) { return String(c||'').replace('⭐ ',''); }
-  function today() { return new Date().toISOString().split('T')[0]; }
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function showToast(msg, type) {
-    var t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'toast ' + (type||'');
-    t.classList.add('show');
-    clearTimeout(t._t);
-    t._t = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  function colorFor(id){ return COVER_COLORS[Math.abs(Number(id)-1)%COVER_COLORS.length]; }
+  function fmt(d){ return d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''; }
+  function catShort(c){ return String(c||'').replace('⭐ ',''); }
+  function today(){ return new Date().toISOString().split('T')[0]; }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function showToast(msg,type){
+    var t=document.getElementById('toast');
+    t.textContent=msg; t.className='toast '+(type||'');
+    t.classList.add('show'); clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },3500);
   }
-  function updateWordCount(el, countId) {
-    var words = el.value.trim() === '' ? 0 : el.value.trim().split(/\s+/).length;
-    var el2 = document.getElementById(countId);
-    el2.textContent = words + ' / 2000 words';
-    el2.className = 'word-count' + (words > 2000 ? ' over' : '');
+  function updateWordCount(el,countId){
+    var words=el.value.trim()===''?0:el.value.trim().split(/\s+/).length;
+    var el2=document.getElementById(countId);
+    el2.textContent=words+' / 2000 words';
+    el2.className='word-count'+(words>2000?' over':'');
   }
-  function previewCover(url) {
-    var wrap = document.getElementById('f-cover-preview');
-    var img  = document.getElementById('f-cover-img');
-    if (url) { img.src = url; wrap.style.display = 'block'; }
-    else      { wrap.style.display = 'none'; }
+  function previewCover(url){
+    var wrap=document.getElementById('f-cover-preview'),img=document.getElementById('f-cover-img');
+    if(url){ img.src=url; wrap.style.display='block'; } else { wrap.style.display='none'; }
   }
 
   // ── TABS ───────────────────────────────────────────────────────────────
-  function switchTab(id, btn) {
+  function switchTab(id,btn){
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
     document.getElementById('tab-'+id).classList.add('active');
-    if (btn) btn.classList.add('active');
-    if (id === 'bingo') renderBingo();
-    if (id === 'leaderboard') renderLeaderboard();
+    if(btn) btn.classList.add('active');
+    if(id==='bingo') renderBingo();
+    if(id==='leaderboard') renderLeaderboard();
+  }
+
+  // ── REFRESH ALL ────────────────────────────────────────────────────────
+  function refreshAll(){
+    document.getElementById('bookGrid').innerHTML='<div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>';
+    document.getElementById('bookCount').textContent='';
+    var p1 = apiCall({action:'getBooks'}).then(function(data){
+      BOOKS=Array.isArray(data)?data:[];
+      BOOKS.forEach(function(b){ if(!Array.isArray(b.returnReviews)) b.returnReviews=[]; });
+    }).catch(function(e){ BOOKS=[]; showToast('Connection error: '+e.message,'error'); });
+    var p2 = apiCall({action:'getBingoBonus'}).then(function(data){
+      BINGO_BONUSES=Array.isArray(data)?data:[];
+    }).catch(function(){ BINGO_BONUSES=[]; });
+    return Promise.all([p1,p2]).then(function(){ renderBooks(); renderLeaderboard(); });
   }
 
   // ── BOOK FAIR ──────────────────────────────────────────────────────────
-  function refreshBooks() {
-    document.getElementById('bookGrid').innerHTML = '<div class="loading-state"><div class="spin">⏳</div><p>Loading the book fair...</p></div>';
-    document.getElementById('bookCount').textContent = '';
-    return apiCall({ action: 'getBooks' })
-      .then(function(data) {
-        BOOKS = Array.isArray(data) ? data : [];
-        BOOKS.forEach(function(b){ if (!Array.isArray(b.returnReviews)) b.returnReviews = []; });
-        renderBooks();
-        renderLeaderboard();
-      })
-      .catch(function(e) {
-        BOOKS = [];
-        renderBooks();
-        showToast('Connection error: ' + e.message, 'error');
-      });
-  }
-
-  function renderBooks() {
-    var likes = LS.get('bb_likes'), borrows = LS.get('bb_borrows');
-    var grid = document.getElementById('bookGrid');
-    document.getElementById('bookCount').textContent = BOOKS.length + ' book' + (BOOKS.length !== 1 ? 's' : '') + ' in the fair';
-    if (!BOOKS.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="big-emoji">📚</div><h3>No books yet!</h3><p>Be the first to add a recommendation.</p></div>';
-      return;
-    }
-    grid.innerHTML = BOOKS.slice().reverse().map(function(b) {
-      var col = colorFor(b.id);
-      var liked = !!likes[b.id], borrowed = !!borrows[b.id];
-      var coverHtml = b.coverUrl ? '<img class="book-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="book-cover-overlay"></div>' : '';
+  function renderBooks(){
+    var likes=LS.get('bb_likes'),borrows=LS.get('bb_borrows');
+    var grid=document.getElementById('bookGrid');
+    document.getElementById('bookCount').textContent=BOOKS.length+' book'+(BOOKS.length!==1?'s':'')+' in the fair';
+    if(!BOOKS.length){ grid.innerHTML='<div class="empty-state"><div class="big-emoji">📚</div><h3>No books yet!</h3><p>Be the first to add a recommendation.</p></div>'; return; }
+    grid.innerHTML=BOOKS.slice().reverse().map(function(b){
+      var col=colorFor(b.id),liked=!!likes[b.id],borrowed=!!borrows[b.id];
+      var coverHtml=b.coverUrl?'<img class="book-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="book-cover-overlay"></div>':'';
       return '<div class="book-card" onclick="openBook(\''+b.id+'\')">'+
         '<div class="book-cover" style="background:'+col+'">'+coverHtml+
         '<div class="book-cover-text"><div class="book-cover-title">'+esc(b.title)+'</div><div class="book-cover-author">'+esc(b.author)+'</div></div></div>'+
@@ -428,220 +497,296 @@
     }).join('');
   }
 
-  function toggleLike(bookId) {
-    var likes = LS.get('bb_likes');
-    var book = BOOKS.find(function(b){ return String(b.id)===String(bookId); });
-    if (!book) return;
-    var delta = likes[bookId] ? -1 : 1;
-    if (delta===1) { likes[bookId]=true; book.likes=(book.likes||0)+1; }
-    else           { delete likes[bookId]; book.likes=Math.max(0,(book.likes||0)-1); }
-    LS.set('bb_likes', likes);
-    var btn=document.getElementById('l-'+bookId), cnt=document.getElementById('lc-'+bookId);
-    if (btn) btn.className='act-btn '+(likes[bookId]?'liked':'');
-    if (cnt) cnt.textContent=book.likes;
-    if (String(currentBookId)===String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
+  function toggleLike(bookId){
+    var likes=LS.get('bb_likes'),book=BOOKS.find(function(b){ return String(b.id)===String(bookId); });
+    if(!book) return;
+    var delta=likes[bookId]?-1:1;
+    if(delta===1){ likes[bookId]=true; book.likes=(book.likes||0)+1; } else { delete likes[bookId]; book.likes=Math.max(0,(book.likes||0)-1); }
+    LS.set('bb_likes',likes);
+    var btn=document.getElementById('l-'+bookId),cnt=document.getElementById('lc-'+bookId);
+    if(btn) btn.className='act-btn '+(likes[bookId]?'liked':'');
+    if(cnt) cnt.textContent=book.likes;
+    if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
     renderLeaderboard();
-    apiCall({ action:'like', bookId:bookId, delta:delta }).catch(function(){});
+    apiCall({action:'like',bookId:bookId,delta:delta}).catch(function(){});
   }
 
-  function toggleBorrow(bookId) {
-    var borrows = LS.get('bb_borrows');
-    var book = BOOKS.find(function(b){ return String(b.id)===String(bookId); });
-    if (!book) return;
-    var delta = borrows[bookId] ? -1 : 1;
-    if (delta===1) { borrows[bookId]=true; book.wantToBorrow=(book.wantToBorrow||0)+1; }
-    else           { delete borrows[bookId]; book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1); }
-    LS.set('bb_borrows', borrows);
-    var btn=document.getElementById('br-'+bookId), cnt=document.getElementById('bc-'+bookId);
-    if (btn) btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
-    if (cnt) cnt.textContent=book.wantToBorrow;
-    if (String(currentBookId)===String(bookId) && document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
-    apiCall({ action:'borrow', bookId:bookId, delta:delta }).catch(function(){});
+  function toggleBorrow(bookId){
+    var borrows=LS.get('bb_borrows'),book=BOOKS.find(function(b){ return String(b.id)===String(bookId); });
+    if(!book) return;
+    var delta=borrows[bookId]?-1:1;
+    if(delta===1){ borrows[bookId]=true; book.wantToBorrow=(book.wantToBorrow||0)+1; } else { delete borrows[bookId]; book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1); }
+    LS.set('bb_borrows',borrows);
+    var btn=document.getElementById('br-'+bookId),cnt=document.getElementById('bc-'+bookId);
+    if(btn) btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
+    if(cnt) cnt.textContent=book.wantToBorrow;
+    if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open')) renderBookModal(bookId);
+    apiCall({action:'borrow',bookId:bookId,delta:delta}).catch(function(){});
   }
 
   // ── BOOK MODAL ─────────────────────────────────────────────────────────
-  function openBook(bookId) { currentBookId=bookId; renderBookModal(bookId); openOverlay('bookOverlay'); }
+  function openBook(bookId){ currentBookId=bookId; renderBookModal(bookId); openOverlay('bookOverlay'); }
 
-  function renderBookModal(bookId) {
-    var likes=LS.get('bb_likes'), borrows=LS.get('bb_borrows');
+  function renderBookModal(bookId){
+    var likes=LS.get('bb_likes'),borrows=LS.get('bb_borrows');
     var b=BOOKS.find(function(x){ return String(x.id)===String(bookId); });
-    if (!b) return;
-    var col=colorFor(b.id), liked=!!likes[b.id], borrowed=!!borrows[b.id];
+    if(!b) return;
+    var col=colorFor(b.id),liked=!!likes[b.id],borrowed=!!borrows[b.id];
     var coverHtml=b.coverUrl?'<img class="m-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="m-cover-overlay"></div>':'';
     var returns=Array.isArray(b.returnReviews)?b.returnReviews:[];
     var rrHtml=returns.length?returns.map(function(r){
       return '<div class="rr-item"><div class="rr-reviewer">📖 '+esc(r.reviewerName||r.name)+' · '+fmt(r.date)+'</div><div class="rr-text">'+esc(r.text)+'</div></div>';
     }).join(''):'<p class="rr-empty">No return reviews yet — borrow it and be the first!</p>';
-
-    var fullReviewHtml = (b.fullReview && b.fullReview.toString().trim())
-      ? '<div class="m-full-review-label">📖 Full Review</div><div class="m-full-review">'+esc(b.fullReview)+'</div>'
-      : '';
-
-    document.getElementById('bookModalContent').innerHTML =
+    var fullReviewHtml=(b.fullReview&&b.fullReview.toString().trim())?'<div class="m-full-review-label">📖 Full Review</div><div class="m-full-review">'+esc(b.fullReview)+'</div>':'';
+    document.getElementById('bookModalContent').innerHTML=
       '<div class="m-cover" style="background:'+col+'">'+coverHtml+
       '<button class="m-close-btn" onclick="closeOverlay(\'bookOverlay\')">✕</button>'+
       '<div class="m-cover-text"><h2>'+esc(b.title)+'</h2><p>'+esc(b.author)+'</p></div></div>'+
       '<div class="m-body">'+
       '<div class="m-meta"><div class="cat-tag">'+esc(catShort(b.category))+'</div><div class="m-recommender">by <span>'+esc(b.recommender)+'</span> · '+fmt(b.date)+'</div></div>'+
-      '<div class="m-review">'+esc(b.microReview)+'</div>'+
-      fullReviewHtml+
+      '<div class="m-review">'+esc(b.microReview)+'</div>'+fullReviewHtml+
       '<div class="m-actions">'+
       '<button class="act-btn '+(liked?'liked':'')+'" onclick="toggleLike(\''+bookId+'\')">👍 '+(b.likes||0)+' Likes</button>'+
       '<button class="act-btn '+(borrowed?'borrowed':'')+'" onclick="toggleBorrow(\''+bookId+'\')">📖 '+(b.wantToBorrow||0)+' Want to Borrow</button>'+
       '<button class="act-btn" onclick="openEditBook(\''+bookId+'\')" style="margin-left:auto">✏️ Edit</button>'+
       '</div>'+
-      '<div class="return-section"><h4>Return Reviews ('+returns.length+')</h4>'+
-      '<div id="rrList">'+rrHtml+'</div>'+
+      '<div class="return-section"><h4>Return Reviews ('+returns.length+')</h4><div id="rrList">'+rrHtml+'</div>'+
       '<button class="act-btn" style="margin-top:12px;background:var(--accent-lighter);border-color:var(--accent-light);color:var(--accent)" onclick="document.getElementById(\'rrForm\').classList.toggle(\'hidden\')">✍️ Post a Return Review</button>'+
       '<div class="rr-form hidden" id="rrForm">'+
-      '<div class="form-g" style="margin-top:14px"><label>Your Name</label><input type="text" id="rr-name" placeholder="Your name" /></div>'+
+      '<div class="form-g" style="margin-top:14px"><label>Your Name</label><input type="text" id="rr-name" placeholder="Your name"/></div>'+
       '<div class="form-g"><label>Your Return Review</label><textarea id="rr-text" placeholder="I borrowed this book and it made me ___..."></textarea></div>'+
       '<button class="btn-primary" id="rrSubmitBtn" onclick="submitReturn(\''+bookId+'\')">Submit Review</button>'+
       '</div></div></div>';
   }
 
-  function submitReturn(bookId) {
-    var name=document.getElementById('rr-name').value.trim();
-    var text=document.getElementById('rr-text').value.trim();
-    if (!name||!text) { alert('Please fill in your name and review.'); return; }
+  function submitReturn(bookId){
+    var name=document.getElementById('rr-name').value.trim(),text=document.getElementById('rr-text').value.trim();
+    if(!name||!text){ alert('Please fill in your name and review.'); return; }
     var btn=document.getElementById('rrSubmitBtn');
     btn.textContent='Submitting...'; btn.disabled=true;
-    apiCall({ action:'addReturn', bookId:bookId, reviewerName:name, text:text, date:today() })
-      .then(function() {
+    apiCall({action:'addReturn',bookId:bookId,reviewerName:name,text:text,date:today()})
+      .then(function(){
         var book=BOOKS.find(function(b){ return String(b.id)===String(bookId); });
-        if (book) { if(!book.returnReviews) book.returnReviews=[]; book.returnReviews.push({reviewerName:name,text:text,date:today()}); }
+        if(book){ if(!book.returnReviews) book.returnReviews=[]; book.returnReviews.push({reviewerName:name,text:text,date:today()}); }
         renderBookModal(bookId); renderLeaderboard();
-        showToast('Return review posted! +2 pts for you and the recommender 🎉');
-      })
-      .catch(function(e) {
-        showToast('Could not submit: '+e.message, 'error');
-        btn.textContent='Submit Review'; btn.disabled=false;
-      });
+        showToast('Return review posted! +2 pts 🎉');
+      }).catch(function(e){ showToast('Could not submit: '+e.message,'error'); btn.textContent='Submit Review'; btn.disabled=false; });
   }
 
   // ── ADD / EDIT BOOK ────────────────────────────────────────────────────
-  function openAddBook() {
-    editingBookId = null;
-    document.querySelector('#addOverlay .m-header h2').textContent = '📝 Add Your Book';
-    document.getElementById('addBookBtn').textContent = 'Post My Book 📚';
+  function openAddBook(){
+    editingBookId=null;
+    document.getElementById('addModalTitle').textContent='📝 Add Your Book';
+    document.getElementById('addBookBtn').textContent='Post My Book 📚';
     ['f-title','f-author','f-name','f-review','f-fullreview','f-cover'].forEach(function(id){ document.getElementById(id).value=''; });
-    document.getElementById('f-category').selectedIndex = 0;
-    document.getElementById('f-cover-preview').style.display = 'none';
-    document.getElementById('f-wc').textContent = '0 / 2000 words';
+    document.getElementById('f-category').selectedIndex=0;
+    document.getElementById('f-cover-preview').style.display='none';
+    document.getElementById('f-wc').textContent='0 / 2000 words';
     openOverlay('addOverlay');
   }
 
-  function openEditBook(bookId) {
-    var b = BOOKS.find(function(x){ return String(x.id)===String(bookId); });
-    if (!b) return;
-    editingBookId = bookId;
+  function openEditBook(bookId){
+    var b=BOOKS.find(function(x){ return String(x.id)===String(bookId); });
+    if(!b) return;
+    editingBookId=bookId;
     closeOverlay('bookOverlay');
-    document.querySelector('#addOverlay .m-header h2').textContent = '✏️ Edit Your Post';
-    document.getElementById('addBookBtn').textContent = 'Save Changes ✓';
-    document.getElementById('f-title').value   = b.title || '';
-    document.getElementById('f-author').value  = b.author || '';
-    document.getElementById('f-name').value    = b.recommender || '';
-    document.getElementById('f-review').value  = b.microReview || '';
-    document.getElementById('f-fullreview').value = b.fullReview || '';
-    document.getElementById('f-cover').value   = b.coverUrl || '';
-    // Set category dropdown
-    var sel = document.getElementById('f-category');
-    for (var i=0; i<sel.options.length; i++) {
-      if (sel.options[i].value === b.category) { sel.selectedIndex = i; break; }
-    }
-    // Show cover preview if exists
-    if (b.coverUrl) { previewCover(b.coverUrl); }
-    else { document.getElementById('f-cover-preview').style.display = 'none'; }
-    // Update word count
-    updateWordCount(document.getElementById('f-fullreview'), 'f-wc');
+    document.getElementById('addModalTitle').textContent='✏️ Edit Your Post';
+    document.getElementById('addBookBtn').textContent='Save Changes ✓';
+    document.getElementById('f-title').value=b.title||'';
+    document.getElementById('f-author').value=b.author||'';
+    document.getElementById('f-name').value=b.recommender||'';
+    document.getElementById('f-review').value=b.microReview||'';
+    document.getElementById('f-fullreview').value=b.fullReview||'';
+    document.getElementById('f-cover').value=b.coverUrl||'';
+    var sel=document.getElementById('f-category');
+    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value===b.category){ sel.selectedIndex=i; break; } }
+    if(b.coverUrl) previewCover(b.coverUrl); else document.getElementById('f-cover-preview').style.display='none';
+    updateWordCount(document.getElementById('f-fullreview'),'f-wc');
     openOverlay('addOverlay');
   }
 
-  function submitBook() {
-    var title  = document.getElementById('f-title').value.trim();
-    var author = document.getElementById('f-author').value.trim();
-    var cat    = document.getElementById('f-category').value;
-    var name   = document.getElementById('f-name').value.trim();
-    var review = document.getElementById('f-review').value.trim();
-    var full   = document.getElementById('f-fullreview').value.trim();
-    var cover  = document.getElementById('f-cover').value.trim();
-    if (!title||!author||!cat||!name||!review) { alert('Please fill in all required fields.'); return; }
-    var wordCount = full==='' ? 0 : full.split(/\s+/).length;
-    if (wordCount > 2000) { alert('Full review exceeds 2000 words. Please shorten it.'); return; }
+  function submitBook(){
+    var title=document.getElementById('f-title').value.trim(),author=document.getElementById('f-author').value.trim();
+    var cat=document.getElementById('f-category').value,name=document.getElementById('f-name').value.trim();
+    var review=document.getElementById('f-review').value.trim(),full=document.getElementById('f-fullreview').value.trim();
+    var cover=document.getElementById('f-cover').value.trim();
+    if(!title||!author||!cat||!name||!review){ alert('Please fill in all required fields.'); return; }
+    if(full!==''&&full.split(/\s+/).length>2000){ alert('Full review exceeds 2000 words.'); return; }
     var btn=document.getElementById('addBookBtn');
-    btn.textContent = editingBookId ? 'Saving...' : 'Posting...'; btn.disabled=true;
-    var isEdit = !!editingBookId;
-    var params = isEdit
-      ? { action:'editBook', bookId:editingBookId, title:title, author:author, category:cat, recommender:name, microReview:review, fullReview:full, coverUrl:cover||'' }
-      : { action:'addBook',  title:title, author:author, category:cat, recommender:name, microReview:review, fullReview:full, coverUrl:cover||'', date:today() };
+    var isEdit=!!editingBookId;
+    btn.textContent=isEdit?'Saving...':'Posting...'; btn.disabled=true;
+    var params=isEdit
+      ? {action:'editBook',bookId:editingBookId,title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||''}
+      : {action:'addBook',title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||'',date:today()};
     apiCall(params)
-      .then(function(res) {
-        if (res && res.error) throw new Error(res.error);
+      .then(function(res){
+        if(res&&res.error) throw new Error(res.error);
         ['f-title','f-author','f-name','f-review','f-fullreview','f-cover'].forEach(function(id){ document.getElementById(id).value=''; });
         document.getElementById('f-category').selectedIndex=0;
         document.getElementById('f-cover-preview').style.display='none';
         document.getElementById('f-wc').textContent='0 / 2000 words';
-        editingBookId = null;
+        editingBookId=null;
         closeOverlay('addOverlay');
-        showToast(isEdit ? 'Post updated! ✓' : 'Book added! +2 pts for you 📚');
-        return refreshBooks();
-      })
-      .catch(function(e) {
-        showToast('Could not ' + (isEdit?'save':'add') + ' book: ' + e.message, 'error');
-      })
-      .finally(function() {
-        btn.textContent = 'Post My Book 📚'; btn.disabled=false;
-      });
+        showToast(isEdit?'Post updated! ✓':'Book added! +2 pts 📚');
+        return refreshAll();
+      }).catch(function(e){ showToast('Could not '+(isEdit?'save':'add')+' book: '+e.message,'error'); })
+      .finally(function(){ btn.textContent='Post My Book 📚'; btn.disabled=false; });
   }
 
   // ── BINGO ──────────────────────────────────────────────────────────────
-  function renderBingo() {
+  function countLines(state){
+    return BINGO_LINES.filter(function(l){ return l.every(function(i){ return state[i]; }); }).length;
+  }
+
+  function renderBingo(){
     var state=LS.get('bb_bingo');
+    var claimed=LS.get('bb_bingo_claimed'); // {lines: N, fullcard: bool}
     var grid=document.getElementById('bingoGrid');
     grid.innerHTML=CATEGORIES.map(function(cat,i){
-      var isWild=cat.startsWith('⭐'), done=!!state[i];
+      var isWild=cat.startsWith('⭐'),done=!!state[i];
       return '<div class="bingo-cell'+(done?' done':'')+(isWild?' wild':'')+'" onclick="toggleSquare('+i+')">'+esc(cat)+'</div>';
     }).join('');
     var done=Object.values(state).filter(Boolean).length;
-    var lines=BINGO_LINES.filter(function(l){ return l.every(function(i){ return state[i]; }); }).length;
+    var lines=countLines(state);
+    var claimedLines=claimed.lines||0;
+    var claimedFull=!!claimed.fullcard;
     document.getElementById('bingoProgress').innerHTML='<strong>'+done+'/16</strong> squares marked · <strong>'+lines+'</strong> line'+(lines!==1?'s':'')+' completed'+(lines>0?' 🎉':'');
+    // Render claim banner
+    var claimEl=document.getElementById('bingoClaim');
+    var unclaimedLines=lines-claimedLines;
+    if(done===16&&!claimedFull){
+      claimEl.innerHTML='<div class="bingo-claim-banner">'+
+        '<div class="bingo-claim-text">🏆 Full Card Complete!<span>Claim your Bingo Master badge + 20 bonus pts</span></div>'+
+        '<button class="btn-gold" onclick="openClaim(\'fullcard\','+lines+')">Claim! 🎴</button></div>';
+    } else if(unclaimedLines>0){
+      var ptsToGet=unclaimedLines*5;
+      claimEl.innerHTML='<div class="bingo-claim-banner">'+
+        '<div class="bingo-claim-text">🎯 '+(unclaimedLines>1?unclaimedLines+' new lines':'New line')+' completed!<span>Claim your +'+(ptsToGet)+' bonus pts</span></div>'+
+        '<button class="btn-gold" onclick="openClaim(\'line\','+lines+')">Claim! ✨</button></div>';
+    } else {
+      claimEl.innerHTML='';
+    }
   }
 
-  function toggleSquare(i) {
-    var state=LS.get('bb_bingo'); state[i]=!state[i]; LS.set('bb_bingo',state); renderBingo();
+  function toggleSquare(i){
+    var state=LS.get('bb_bingo');
+    var linesBefore=countLines(state);
+    state[i]=!state[i];
+    LS.set('bb_bingo',state);
+    var linesAfter=countLines(state);
+    var done=Object.values(state).filter(Boolean).length;
+    renderBingo();
+    // Show celebration if new line(s) completed
+    if(linesAfter>linesBefore){
+      var isFull=done===16;
+      showCelebration(isFull,linesAfter-linesBefore);
+    }
+  }
+
+  function showCelebration(isFull, newLines){
+    if(isFull){
+      document.getElementById('celebEmoji').textContent='🏆';
+      document.getElementById('celebTitle').textContent='BINGO MASTER!';
+      document.getElementById('celebSub').textContent='You completed the full card — all 16 categories! 🎊';
+      document.getElementById('celebPts').textContent='+20 pts';
+      document.getElementById('celebNote').textContent='Go to the Bingo Card tab to claim your bonus and badge!';
+    } else {
+      document.getElementById('celebEmoji').textContent='🎉';
+      document.getElementById('celebTitle').textContent='BINGO!';
+      document.getElementById('celebSub').textContent='You completed '+(newLines>1?newLines+' new lines':'a line')+'! Keep going!';
+      document.getElementById('celebPts').textContent='+'+(newLines*5)+' pts';
+      document.getElementById('celebNote').textContent='Go to the Bingo Card tab to claim your bonus!';
+    }
+    document.getElementById('celebrationOverlay').classList.add('open');
+  }
+
+  function closeCelebration(){ document.getElementById('celebrationOverlay').classList.remove('open'); }
+
+  // ── CLAIM BINGO BONUS ──────────────────────────────────────────────────
+  function openClaim(type, lines){
+    pendingClaimType=type; pendingClaimLines=lines;
+    var isFullcard=type==='fullcard';
+    var claimed=LS.get('bb_bingo_claimed');
+    var unclaimedLines=isFullcard?0:(lines-(claimed.lines||0));
+    document.getElementById('claimModalTitle').textContent=isFullcard?'🏆 Claim Bingo Master!':'🎯 Claim Line Bonus!';
+    document.getElementById('claimModalDesc').textContent=isFullcard
+      ? 'You completed the full bingo card! Enter your name to claim +20 pts and your 🎴 Bingo Master badge.'
+      : 'You completed '+(unclaimedLines>1?unclaimedLines+' new lines':'a new line')+'! Enter your name to claim +'+(unclaimedLines*5)+' pts.';
+    document.getElementById('claim-name').value='';
+    openOverlay('claimOverlay');
+  }
+
+  function submitClaim(){
+    var name=document.getElementById('claim-name').value.trim();
+    if(!name){ alert('Please enter your name.'); return; }
+    var btn=document.getElementById('claimBtn');
+    btn.textContent='Claiming...'; btn.disabled=true;
+    var claimed=LS.get('bb_bingo_claimed');
+    var unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-(claimed.lines||0));
+    var pts=pendingClaimType==='fullcard'?20:unclaimedLines*5;
+    apiCall({action:'claimBingo',name:name,type:pendingClaimType,lines:pendingClaimLines,pts:pts,date:today()})
+      .then(function(res){
+        if(res&&res.error) throw new Error(res.error);
+        // Update local claimed state
+        var newClaimed=LS.get('bb_bingo_claimed');
+        if(pendingClaimType==='fullcard'){ newClaimed.fullcard=true; newClaimed.lines=pendingClaimLines; }
+        else { newClaimed.lines=pendingClaimLines; }
+        LS.set('bb_bingo_claimed',newClaimed);
+        closeOverlay('claimOverlay');
+        renderBingo();
+        // Refresh bonuses for leaderboard
+        apiCall({action:'getBingoBonus'}).then(function(data){ BINGO_BONUSES=Array.isArray(data)?data:[]; renderLeaderboard(); }).catch(function(){});
+        if(pendingClaimType==='fullcard'){
+          showToast('🎴 Bingo Master unlocked! +20 pts — you\'re a legend!');
+        } else {
+          showToast('Bonus claimed! +'+pts+' pts added 🎉');
+        }
+      }).catch(function(e){ showToast('Could not claim: '+e.message,'error'); })
+      .finally(function(){ btn.textContent='Claim My Bonus 🎉'; btn.disabled=false; });
   }
 
   // ── LEADERBOARD ────────────────────────────────────────────────────────
-  function renderLeaderboard() {
+  function renderLeaderboard(){
     var pp={};
     BOOKS.forEach(function(b){
-      if (!pp[b.recommender]) pp[b.recommender]={name:b.recommender,posted:0,received:0,pts:0};
+      if(!pp[b.recommender]) pp[b.recommender]={name:b.recommender,posted:0,received:0,pts:0,isMaster:false};
       pp[b.recommender].posted++;
       pp[b.recommender].pts+=2+(b.likes||0)*0.5+(b.returnReviews||[]).length*2;
       pp[b.recommender].received+=(b.returnReviews||[]).length;
       (b.returnReviews||[]).forEach(function(r){
         var n=r.reviewerName||r.name||'';
-        if (!pp[n]) pp[n]={name:n,posted:0,received:0,pts:0};
+        if(!pp[n]) pp[n]={name:n,posted:0,received:0,pts:0,isMaster:false};
         pp[n].pts+=2;
       });
+    });
+    // Add bingo bonus points + badge
+    BINGO_BONUSES.forEach(function(bonus){
+      var n=bonus.name||'';
+      if(!pp[n]) pp[n]={name:n,posted:0,received:0,pts:0,isMaster:false};
+      pp[n].pts+=(Number(bonus.pts)||0);
+      if(bonus.type==='fullcard') pp[n].isMaster=true;
     });
     var sorted=Object.values(pp).sort(function(a,b){ return b.pts-a.pts; });
     var medals=['🥇','🥈','🥉'];
     var el=document.getElementById('lbTable');
-    if (!sorted.length) { el.innerHTML='<div class="lb-empty">No entries yet — add your first book!</div>'; return; }
+    if(!sorted.length){ el.innerHTML='<div class="lb-empty">No entries yet — add your first book!</div>'; return; }
     el.innerHTML='<div class="lb-row lb-head"><div></div><div>Participant</div><div style="text-align:right">Books</div><div class="lb-sec" style="text-align:right">Returns</div><div style="text-align:right">Points</div></div>'+
       sorted.map(function(p,i){
-        return '<div class="lb-row"><div class="lb-rank">'+(medals[i]||i+1)+'</div><div class="lb-name">'+esc(p.name)+'</div><div class="lb-sec">'+p.posted+'</div><div class="lb-sec">'+p.received+'</div><div class="lb-pts">'+(p.pts%1===0?p.pts:p.pts.toFixed(1))+'</div></div>';
+        var badge=p.isMaster?'<span class="badge-bingo">🎴 Bingo Master</span>':'';
+        return '<div class="lb-row"><div class="lb-rank">'+(medals[i]||i+1)+'</div>'+
+          '<div class="lb-name">'+esc(p.name)+badge+'</div>'+
+          '<div class="lb-sec">'+p.posted+'</div><div class="lb-sec">'+p.received+'</div>'+
+          '<div class="lb-pts">'+(p.pts%1===0?p.pts:p.pts.toFixed(1))+'</div></div>';
       }).join('');
   }
 
   // ── OVERLAYS ───────────────────────────────────────────────────────────
-  function openOverlay(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
-  function closeOverlay(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
-  function overlayClose(e,id) { if(e.target===document.getElementById(id)) closeOverlay(id); }
+  function openOverlay(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeOverlay(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  function overlayClose(e,id){ if(e.target===document.getElementById(id)) closeOverlay(id); }
 
   // ── INIT ───────────────────────────────────────────────────────────────
-  refreshBooks();
+  refreshAll();
   renderBingo();
 </script>
 </body>
