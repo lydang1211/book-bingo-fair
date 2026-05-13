@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,6 +109,13 @@
     .btn-return { width: 100%; padding: 9px; background: var(--accent-lighter); color: var(--accent); border: 1.5px solid var(--accent-light); border-radius: var(--r-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-return:hover { background: var(--accent); color: white; }
     .btn-unavailable { width: 100%; padding: 9px; background: #f5f5f5; color: var(--text-3); border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 13px; cursor: default; font-family: inherit; }
+    /* multi-select categories */
+    .form-g select[multiple] { height: 148px; padding: 6px 8px; background-image: none; }
+    .form-g select[multiple] option { padding: 5px 8px; border-radius: 4px; margin-bottom: 2px; }
+    .form-g select[multiple] option:checked { background: var(--accent); color: white; }
+    /* category tags on lib card */
+    .lib-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .lib-cat-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 9.5px; font-weight: 600; padding: 2px 8px; border-radius: var(--r-pill); text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; }
 
     /* ── BINGO ── */
     .bingo-wrap { max-width: 620px; margin: 0 auto; }
@@ -430,6 +436,28 @@
       <div class="form-g"><label>Book Title *</label><input type="text" id="d-title" placeholder="e.g. Sapiens"/></div>
       <div class="form-g"><label>Author *</label><input type="text" id="d-author" placeholder="e.g. Yuval Noah Harari"/></div>
       <div class="form-g"><label>Your Name * <span class="opt">(donor)</span></label><input type="text" id="d-donor" placeholder="e.g. Ly Dang"/></div>
+      <div class="form-g">
+        <label>Bingo Categories <span class="opt">(Ctrl/Cmd + click để chọn nhiều)</span></label>
+        <select id="d-categories" multiple>
+          <option>A book under 150 pages</option>
+          <option>A book by an Asian author</option>
+          <option>A book that changed how you think</option>
+          <option>A book someone at Amanotes recommended</option>
+          <option>A book you've re-read more than once</option>
+          <option>A book published in the last 2 years</option>
+          <option>A book outside your usual genre</option>
+          <option>A book about a real person (biography/memoir)</option>
+          <option>A book with a one-word title</option>
+          <option>A book you discovered by accident</option>
+          <option>A book related to your work</option>
+          <option>⭐ WILDCARD — any book, no rules</option>
+          <option>A book you'd gift to a friend</option>
+          <option>A book that made you laugh or cry</option>
+          <option>A book originally written in a non-English language</option>
+          <option>A book you started but haven't finished (finish it now!)</option>
+        </select>
+        <div class="form-hint">💡 Một cuốn sách có thể phù hợp nhiều category — chọn hết đi!</div>
+      </div>
       <div class="form-g"><label>Short Description <span class="opt">(optional — what's it about?)</span></label><textarea id="d-desc" placeholder="A brief description of this book..."></textarea></div>
       <div class="form-g">
         <label>Book Cover URL <span class="opt">(optional)</span></label>
@@ -793,7 +821,9 @@
     var cover=document.getElementById('d-cover').value.trim();
     if(!title||!author||!donor){alert('Please fill in title, author, and your name.');return;}
     var btn=document.getElementById('donateBtn');btn.textContent='Donating...';btn.disabled=true;
-    apiCall({action:'donateBook',title:title,author:author,addedBy:donor,description:desc,coverUrl:cover||'',date:today()})
+    var catSel=document.getElementById('d-categories');
+    var cats=Array.from(catSel.selectedOptions).map(function(o){return o.value;}).join('|');
+    apiCall({action:'donateBook',title:title,author:author,addedBy:donor,description:desc,categories:cats,coverUrl:cover||'',date:today()})
       .then(function(res){
         if(res&&res.error)throw new Error(res.error);
         ['d-title','d-author','d-donor','d-desc','d-cover'].forEach(function(id){document.getElementById(id).value='';});
