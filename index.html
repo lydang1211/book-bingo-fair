@@ -85,6 +85,19 @@
     .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
     .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
+    /* ── LIBRARY SEARCH ── */
+    .lib-search-wrap { position: relative; margin-bottom: 12px; }
+    .lib-search-wrap input { width: 100%; padding: 10px 16px 10px 40px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 14px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: var(--shadow-sm); }
+    .lib-search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,94,60,0.10); }
+    .lib-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
+    .lib-search-clear { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 14px; color: var(--text-3); cursor: pointer; display: none; padding: 2px; }
+    .lib-search-clear.show { display: block; }
+
+    /* ── CATEGORY FILTER ── */
+    .lib-cat-filter { width: 100%; padding: 9px 13px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 13px; font-family: inherit; color: var(--text-2); background: var(--surface); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6e73' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; transition: border-color 0.2s; }
+    .lib-cat-filter:focus { border-color: var(--accent); outline: none; }
+    .lib-cat-filter.active { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
     .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     .lib-card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
     .lib-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
@@ -305,10 +318,36 @@
         <button class="btn-primary" onclick="openDonateBook()">+ Donate a Book</button>
       </div>
     </div>
+    <!-- Search bar -->
+    <div class="lib-search-wrap">
+      <span class="lib-search-icon">🔍</span>
+      <input type="text" id="libSearch" placeholder="Search by title or author..." oninput="onLibSearch(this.value)" />
+      <button class="lib-search-clear" id="libSearchClear" onclick="clearLibSearch()">✕</button>
+    </div>
+    <!-- Status + Category filters -->
     <div class="lib-filters">
       <button class="filter-btn active" onclick="filterLib('all',this)">All Books</button>
       <button class="filter-btn" onclick="filterLib('available',this)">✅ Available</button>
       <button class="filter-btn" onclick="filterLib('reading',this)">📖 Being Read</button>
+      <select class="lib-cat-filter" id="libCatFilter" onchange="onCatFilter(this)">
+        <option value="">🎴 All Categories</option>
+        <option>A book under 150 pages</option>
+        <option>A book by an Asian author</option>
+        <option>A book that changed how you think</option>
+        <option>A book someone at Amanotes recommended</option>
+        <option>A book you've re-read more than once</option>
+        <option>A book published in the last 2 years</option>
+        <option>A book outside your usual genre</option>
+        <option>A book about a real person (biography/memoir)</option>
+        <option>A book with a one-word title</option>
+        <option>A book you discovered by accident</option>
+        <option>A book related to your work</option>
+        <option>⭐ WILDCARD — any book, no rules</option>
+        <option>A book you'd gift to a friend</option>
+        <option>A book that made you laugh or cry</option>
+        <option>A book originally written in a non-English language</option>
+        <option>A book you started but haven't finished (finish it now!)</option>
+      </select>
     </div>
     <div class="lib-grid" id="libGrid">
       <div class="loading-state"><div class="spin">⏳</div><p>Loading the library...</p></div>
@@ -975,6 +1014,97 @@
         return '<div class="lb-row"><div class="lb-rank">'+(medals[i]||i+1)+'</div><div class="lb-name">'+esc(p.name)+badge+'</div><div class="lb-sec">'+p.posted+'</div><div class="lb-sec">'+p.received+'</div><div class="lb-pts">'+(p.pts%1===0?p.pts:p.pts.toFixed(1))+'</div></div>';
       }).join('');
   }
+
+  // ── LIBRARY SEARCH + CATEGORY FILTER + SHUFFLE ────────────────────────
+  var libSearch = '';
+  var libCatFilter = '';
+
+  function onLibSearch(val) {
+    libSearch = val.trim().toLowerCase();
+    var clearBtn = document.getElementById('libSearchClear');
+    if (clearBtn) clearBtn.className = 'lib-search-clear' + (val ? ' show' : '');
+    renderLibrary();
+  }
+  function clearLibSearch() {
+    document.getElementById('libSearch').value = '';
+    onLibSearch('');
+  }
+  function onCatFilter(sel) {
+    libCatFilter = sel.value;
+    sel.className = 'lib-cat-filter' + (sel.value ? ' active' : '');
+    renderLibrary();
+  }
+
+  // Shuffle helper (Fisher-Yates)
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  // Override renderLibrary to apply search + category + shuffle
+  var _origRenderLibrary = renderLibrary;
+  renderLibrary = function() {
+    var grid = document.getElementById('libGrid');
+    var count = document.getElementById('libCount');
+    if (count) count.textContent = LIBRARY.length + ' book' + (LIBRARY.length !== 1 ? 's' : '') + ' in the library';
+
+    // 1. Status filter
+    var list = LIBRARY.filter(function(b) {
+      if (libFilter === 'available') return String(b.status).toLowerCase() !== 'borrowed';
+      if (libFilter === 'reading')   return String(b.status).toLowerCase() === 'borrowed';
+      return true;
+    });
+    // 2. Search filter
+    if (libSearch) {
+      list = list.filter(function(b) {
+        return (b.title  && b.title.toLowerCase().indexOf(libSearch) !== -1) ||
+               (b.author && b.author.toLowerCase().indexOf(libSearch) !== -1);
+      });
+    }
+    // 3. Bingo category filter
+    if (libCatFilter) {
+      list = list.filter(function(b) {
+        var cats = b.categories ? b.categories.toString() : '';
+        return cats.indexOf(libCatFilter) !== -1;
+      });
+    }
+    // 4. Shuffle
+    list = shuffle(list);
+
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="big-emoji">🏛️</div><h3>' +
+        (libSearch || libCatFilter ? 'No matching books' : (libFilter === 'all' ? 'Library is empty!' : 'No books in this filter')) +
+        '</h3><p>' + (libSearch || libCatFilter ? 'Try a different search or filter.' : (libFilter === 'all' ? 'Donate the first book!' : 'Try a different filter.')) + '</p></div>';
+      return;
+    }
+    grid.innerHTML = list.map(function(b) {
+      var col = colorFor(b.id || b.title);
+      var isBorrowed = String(b.status).toLowerCase() === 'borrowed';
+      var cov = b.coverUrl ? '<img class="lib-cover-img" src="' + esc(b.coverUrl) + '" onerror="this.style.display=\'none\'" alt=""><div class="lib-cover-overlay"></div>' : '';
+      var statusBadge = isBorrowed
+        ? '<span class="status-badge reading">📖 Reading: ' + esc(b.borrowedBy) + '</span>'
+        : '<span class="status-badge available">✅ Available</span>';
+      var footerBtn = isBorrowed
+        ? (b.borrowedBy ? '<button class="btn-return" onclick="openReturn(\'' + b.id + '\',\'' + esc(b.title) + '\')">✅ Return This Book</button>' : '<button class="btn-unavailable">📖 Currently being read</button>')
+        : '<button class="btn-borrow" onclick="openBorrow(\'' + b.id + '\',\'' + esc(b.title) + '\')">📖 I\'m Reading This</button>';
+      var catTags = (b.categories && b.categories.toString().trim())
+        ? '<div class="lib-cats">' + b.categories.toString().split('|').filter(Boolean).map(function(c) {
+            return '<span class="lib-cat-tag">' + esc(c.trim()) + '</span>';
+          }).join('') + '</div>' : '';
+      return '<div class="lib-card">' +
+        '<div class="lib-cover" style="background:' + col + '">' + cov +
+        '<div class="lib-cover-text"><div class="lib-cover-title">' + esc(b.title) + '</div><div class="lib-cover-author">' + esc(b.author) + '</div></div></div>' +
+        '<div class="lib-body">' +
+        (b.description ? '<div class="lib-desc">' + esc(b.description) + '</div>' : '') +
+        '<div class="lib-meta">Donated by ' + esc(b.addedBy || 'Amanotes') + (b.dateAdded ? ' · ' + fmt(b.dateAdded) : '') + '</div>' +
+        catTags + statusBadge + '</div>' +
+        '<div class="lib-footer">' + footerBtn + '</div></div>';
+    }).join('');
+  };
 
   // ── OVERLAYS ───────────────────────────────────────────────────────────
   function openOverlay(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
