@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,9 +53,16 @@
     /* ── TOOLBAR ── */
     .fair-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
     .fair-toolbar span { font-size: 13px; color: var(--text-2); }
-    .toolbar-right { display: flex; align-items: center; gap: 8px; }
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-    /* ── BOOK GRID (Fair) ── */
+    /* ── SEARCH ── */
+    .search-wrap { position: relative; }
+    .search-input { padding: 8px 32px 8px 14px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; width: 220px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,94,60,0.1); }
+    .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 14px; display: none; }
+    .search-clear.show { display: block; }
+
+    /* ── BOOK GRID ── */
     .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
     .book-card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow-sm); overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
     .book-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
@@ -80,23 +88,12 @@
     .empty-state p { font-size: 15px; color: var(--text-2); }
 
     /* ── LIBRARY ── */
-    .lib-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .lib-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
     .filter-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-pill); padding: 6px 16px; font-size: 13px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: all 0.18s; font-family: inherit; }
     .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
     .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-    /* ── LIBRARY SEARCH ── */
-    .lib-search-wrap { position: relative; margin-bottom: 12px; }
-    .lib-search-wrap input { width: 100%; padding: 10px 16px 10px 40px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 14px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: var(--shadow-sm); }
-    .lib-search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,94,60,0.10); }
-    .lib-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
-    .lib-search-clear { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 14px; color: var(--text-3); cursor: pointer; display: none; padding: 2px; }
-    .lib-search-clear.show { display: block; }
-
-    /* ── CATEGORY FILTER ── */
-    .lib-cat-filter { width: 100%; padding: 9px 13px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 13px; font-family: inherit; color: var(--text-2); background: var(--surface); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6e73' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; transition: border-color 0.2s; }
-    .lib-cat-filter:focus { border-color: var(--accent); outline: none; }
-    .lib-cat-filter.active { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+    .filter-select { padding: 7px 32px 7px 14px; border: 1.5px solid var(--border); border-radius: var(--r-pill); font-size: 13px; font-family: inherit; color: var(--text-2); background: var(--surface); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6e73' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; transition: border-color 0.2s; }
+    .filter-select:focus, .filter-select.active-filter { border-color: var(--accent); color: var(--accent); }
 
     .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     .lib-card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
@@ -108,51 +105,62 @@
     .lib-cover-title { font-size: 14px; font-weight: 700; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.4); line-height: 1.3; }
     .lib-cover-author { font-size: 11px; color: rgba(255,255,255,0.85); margin-top: 3px; font-style: italic; }
     .lib-body { padding: 12px 14px; flex: 1; }
-    .lib-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+    .lib-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
     .lib-meta { font-size: 11px; color: var(--text-3); margin-bottom: 8px; }
-    .lib-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-    .lib-cat-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 9.5px; font-weight: 600; padding: 2px 8px; border-radius: var(--r-pill); text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; }
-
-    /* Status badges */
+    .lib-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .lib-cat-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: var(--r-pill); text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; }
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: var(--r-pill); }
     .status-badge.available { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
     .status-badge.reading { background: #fef3e8; color: #b35c00; border: 1px solid #f5c896; }
-
     .lib-footer { padding: 10px 14px 14px; border-top: 1px solid var(--border); }
     .btn-borrow { width: 100%; padding: 9px; background: var(--green); color: white; border: none; border-radius: var(--r-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-family: inherit; }
     .btn-borrow:hover { background: #256644; }
     .btn-return { width: 100%; padding: 9px; background: var(--accent-lighter); color: var(--accent); border: 1.5px solid var(--accent-light); border-radius: var(--r-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-return:hover { background: var(--accent); color: white; }
     .btn-unavailable { width: 100%; padding: 9px; background: #f5f5f5; color: var(--text-3); border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 13px; cursor: default; font-family: inherit; }
-    /* multi-select categories */
-    .form-g select[multiple] { height: 148px; padding: 6px 8px; background-image: none; }
-    .form-g select[multiple] option { padding: 5px 8px; border-radius: 4px; margin-bottom: 2px; }
-    .form-g select[multiple] option:checked { background: var(--accent); color: white; }
-    /* category tags on lib card */
-    .lib-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-    .lib-cat-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 9.5px; font-weight: 600; padding: 2px 8px; border-radius: var(--r-pill); text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; }
 
     /* ── BINGO ── */
-    .bingo-wrap { max-width: 620px; margin: 0 auto; }
+    .bingo-wrap { max-width: 680px; margin: 0 auto; }
     .section-header { text-align: center; margin-bottom: 24px; }
     .section-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
     .section-header p { color: var(--text-2); font-size: 14px; }
+
+    /* Name box */
+    .bingo-name-box { background: var(--surface); border-radius: var(--r); padding: 16px 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .bingo-name-box label { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .bingo-name-box input { flex: 1; min-width: 160px; padding: 8px 13px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+    .bingo-name-box input:focus { border-color: var(--accent); }
+    .bingo-name-set { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; white-space: nowrap; }
+    .bingo-name-set:hover { background: var(--accent-h); }
+    .bingo-name-set:disabled { opacity: 0.6; cursor: not-allowed; }
+    .bingo-name-display { font-size: 13px; color: var(--text-2); }
+    .bingo-name-display strong { color: var(--accent); }
+    .bingo-name-change { background: none; border: none; color: var(--text-3); font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; margin-left: 8px; }
+
+    .bingo-loading { text-align: center; padding: 40px; color: var(--text-2); font-size: 14px; }
+
     .bingo-progress-wrap { text-align: center; margin-bottom: 20px; }
     .bingo-progress { font-size: 14px; color: var(--text-2); background: var(--surface); border-radius: var(--r-pill); padding: 10px 20px; display: inline-block; box-shadow: var(--shadow-sm); }
     .bingo-progress strong { color: var(--accent); }
+
     .bingo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
-    .bingo-cell { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 12px 8px; text-align: center; font-size: 11.5px; color: var(--text); cursor: pointer; transition: all 0.2s; line-height: 1.4; min-height: 88px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; user-select: none; }
+    .bingo-cell { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 10px 8px; text-align: center; font-size: 11px; color: var(--text); cursor: pointer; transition: all 0.2s; line-height: 1.4; min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; user-select: none; gap: 4px; }
     .bingo-cell:hover { border-color: var(--accent); background: var(--accent-lighter); }
     .bingo-cell.done { background: var(--accent); border-color: var(--accent); color: white; font-weight: 500; }
-    .bingo-cell.done::after { content: "✓"; position: absolute; top: 5px; right: 7px; font-size: 12px; font-weight: 700; opacity: 0.75; }
+    .bingo-cell.done::after { content: "✓"; position: absolute; top: 5px; right: 7px; font-size: 11px; font-weight: 700; opacity: 0.75; }
     .bingo-cell.wild { background: linear-gradient(135deg, #fff9e8, #ffedbb); border-color: var(--gold-border); font-weight: 600; }
     .bingo-cell.wild.done { background: var(--gold); border-color: var(--gold); color: white; }
+    .bingo-cell.locked { background: #f5f5f5; border-color: var(--border); color: var(--text-3); cursor: not-allowed; }
+    .bingo-cell-cat { font-size: 10.5px; line-height: 1.4; }
+    .bingo-cell-book { font-size: 9.5px; opacity: 0.82; font-style: italic; line-height: 1.3; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center; }
+
     .bingo-claim-banner { background: linear-gradient(135deg, var(--gold-light), #ffedbb); border: 1.5px solid var(--gold-border); border-radius: var(--r); padding: 16px 20px; margin-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; animation: fadeUp 0.3s ease both; flex-wrap: wrap; }
     .bingo-claim-text { font-size: 14px; font-weight: 600; color: #7a6100; }
     .bingo-claim-text span { display: block; font-size: 12px; color: #9a8020; font-weight: 400; margin-top: 3px; }
     .btn-gold { background: var(--gold); color: white; border: none; padding: 9px 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; font-family: inherit; }
     .btn-gold:hover { background: #9a7d0a; }
     .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+
     .bingo-rewards { background: var(--surface); border-radius: var(--r); padding: 14px 18px; margin-top: 16px; box-shadow: var(--shadow-sm); }
     .bingo-rewards h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 10px; }
     .reward-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
@@ -230,10 +238,21 @@
     .m-header h2 { font-size: 19px; font-weight: 600; }
     .m-close-x { background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer; padding: 4px; font-family: inherit; }
 
-    /* Return prompt box */
+    /* Link book modal */
+    .link-book-list { max-height: 320px; overflow-y: auto; margin: 14px 0; }
+    .link-book-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--r-sm); margin-bottom: 8px; cursor: pointer; transition: all 0.18s; }
+    .link-book-item:hover { border-color: var(--accent); background: var(--accent-lighter); }
+    .link-book-item.selected { border-color: var(--accent); background: var(--accent-lighter); }
+    .link-book-item input[type=radio] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; }
+    .link-book-info { flex: 1; }
+    .link-book-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .link-book-cat { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .link-empty { text-align: center; padding: 24px; color: var(--text-2); font-size: 14px; }
+
+    /* Return prompt */
     .return-prompt { background: var(--green-light); border: 1.5px solid var(--green-border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px; }
-    .return-prompt p { font-size: 14px; color: var(--green); font-weight: 500; margin-bottom: 10px; }
-    .return-prompt small { font-size: 12px; color: #4a9e72; font-weight: 400; }
+    .return-prompt p { font-size: 14px; color: var(--green); font-weight: 500; margin-bottom: 6px; }
+    .return-prompt small { font-size: 12px; color: #4a9e72; }
 
     /* Celebration */
     .celebration-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 400; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
@@ -266,12 +285,13 @@
 
     @media screen and (max-width: 640px) {
       header { padding: 14px 18px; } .header-brand h1 { font-size: 15px; }
-      .tabs-bar { padding: 0 12px; } .tab-btn { padding: 12px 13px; font-size: 13px; }
+      .tabs-bar { padding: 0 12px; } .tab-btn { padding: 12px 12px; font-size: 13px; }
       main { padding: 20px 16px; }
       .book-grid, .lib-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .bingo-grid { gap: 5px; } .bingo-cell { font-size: 10.5px; min-height: 76px; padding: 9px 6px; }
+      .bingo-grid { gap: 5px; } .bingo-cell { font-size: 10px; min-height: 82px; padding: 8px 5px; }
       .awards-row { flex-direction: column; }
       .lb-row { grid-template-columns: 38px 1fr 60px; } .lb-row .lb-sec { display: none; }
+      .search-input { width: 160px; }
     }
     @media screen and (max-width: 380px) { .book-grid, .lib-grid { grid-template-columns: 1fr; } }
   </style>
@@ -314,23 +334,20 @@
     <div class="fair-toolbar">
       <span id="libCount"></span>
       <div class="toolbar-right">
+        <div class="search-wrap">
+          <input class="search-input" id="libSearch" type="text" placeholder="🔍 Search title or author..." oninput="onLibSearch(this)"/>
+          <button class="search-clear" id="libSearchClear" onclick="clearLibSearch()">✕</button>
+        </div>
         <button class="act-btn" onclick="refreshAll()" style="font-size:13px">🔄 Refresh</button>
         <button class="btn-primary" onclick="openDonateBook()">+ Donate a Book</button>
       </div>
     </div>
-    <!-- Search bar -->
-    <div class="lib-search-wrap">
-      <span class="lib-search-icon">🔍</span>
-      <input type="text" id="libSearch" placeholder="Search by title or author..." oninput="onLibSearch(this.value)" />
-      <button class="lib-search-clear" id="libSearchClear" onclick="clearLibSearch()">✕</button>
-    </div>
-    <!-- Status + Category filters -->
     <div class="lib-filters">
-      <button class="filter-btn active" onclick="filterLib('all',this)">All Books</button>
+      <button class="filter-btn active" onclick="filterLib('all',this)">All</button>
       <button class="filter-btn" onclick="filterLib('available',this)">✅ Available</button>
       <button class="filter-btn" onclick="filterLib('reading',this)">📖 Being Read</button>
-      <select class="lib-cat-filter" id="libCatFilter" onchange="onCatFilter(this)">
-        <option value="">🎴 All Categories</option>
+      <select class="filter-select" id="libCatFilter" onchange="onLibCatFilter(this)">
+        <option value="">🎴 Filter by Bingo Category</option>
         <option>A book under 150 pages</option>
         <option>A book by an Asian author</option>
         <option>A book that changed how you think</option>
@@ -359,15 +376,33 @@
     <div class="bingo-wrap">
       <div class="section-header">
         <h2>🎴 Your Bingo Card</h2>
-        <p>Click a square when you've posted a book for that category.<br>Complete any row, column, or diagonal to finish a line!</p>
+        <p>Link each square to a book you've recommended.<br>Complete any row, column, or diagonal to finish a line!</p>
       </div>
-      <div class="bingo-progress-wrap"><div class="bingo-progress" id="bingoProgress">0/16 squares marked · 0 lines completed</div></div>
-      <div class="bingo-grid" id="bingoGrid"></div>
-      <div id="bingoClaim"></div>
-      <div class="bingo-rewards">
-        <h4>🎁 Bingo Rewards</h4>
-        <div class="reward-row"><span>🎯 Complete 1 line (row / column / diagonal)</span><span class="pts-badge gold">+5 pts</span></div>
-        <div class="reward-row"><span>🏆 Complete the full card (16/16)</span><span class="pts-badge gold">+20 pts + 🎴 Bingo Master</span></div>
+
+      <!-- Name box -->
+      <div class="bingo-name-box" id="bingoNameBox">
+        <label>Your name:</label>
+        <input type="text" id="bingoNameInput" placeholder="e.g. Ly Dang" onkeydown="if(event.key==='Enter')setBingoName()"/>
+        <button class="bingo-name-set" id="bingoNameBtn" onclick="setBingoName()">Load My Card →</button>
+      </div>
+      <div id="bingoNameDisplay" style="display:none" class="bingo-name-box">
+        <div class="bingo-name-display">Bingo card for <strong id="bingoNameLabel"></strong></div>
+        <button class="bingo-name-change" onclick="changeBingoName()">Change name</button>
+      </div>
+
+      <div id="bingoArea" style="display:none">
+        <div class="bingo-progress-wrap"><div class="bingo-progress" id="bingoProgress">0/16 squares linked</div></div>
+        <div class="bingo-grid" id="bingoGrid"></div>
+        <div id="bingoClaim"></div>
+        <div class="bingo-rewards">
+          <h4>🎁 Bingo Rewards</h4>
+          <div class="reward-row"><span>🎯 Complete 1 line (row / column / diagonal)</span><span class="pts-badge gold">+5 pts</span></div>
+          <div class="reward-row"><span>🏆 Complete the full card (16/16)</span><span class="pts-badge gold">+20 pts + 🎴 Bingo Master</span></div>
+        </div>
+      </div>
+
+      <div id="bingoLoading" style="display:none" class="bingo-loading">
+        <div style="font-size:32px;margin-bottom:10px">⏳</div>Loading your card...
       </div>
     </div>
   </div>
@@ -395,11 +430,11 @@
       <div class="section-title">❓ How to Play</div>
       <div class="steps">
         <div class="step"><div class="step-num">1</div><div><h3>📝 Recommend a book</h3><p>Click <strong>"+ Add Your Book"</strong>. Pick a bingo category, write a micro-review and optionally a full review. You earn <strong>2 points</strong> instantly.</p></div></div>
-        <div class="step"><div class="step-num">2</div><div><h3>🏛️ Browse the Library</h3><p>Don't have a book? Check the <strong>Library tab</strong> — books physically available at the office. Hit <strong>"I'm Reading This"</strong> to borrow one, then return it when done and post your recommendation!</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>🏛️ Browse the Library</h3><p>Don't have a book? Check the <strong>Library tab</strong> — books physically available at the office. Hit <strong>"I'm Reading This"</strong> to borrow, then return and post your recommendation!</p></div></div>
         <div class="step"><div class="step-num">3</div><div><h3>👍 Like books you love</h3><p>Browse the Book Fair. Hit 👍 on anything that resonates. Every like earns the recommender <strong>0.5 points</strong>.</p></div></div>
-        <div class="step"><div class="step-num">4</div><div><h3>📖 Borrow & Return</h3><p>Hit <strong>"📖 Want to Borrow"</strong> on a Fair post to signal interest in borrowing from a colleague. After reading, post a <strong>return review</strong> for <strong>+2 pts each</strong>.</p></div></div>
-        <div class="step"><div class="step-num">5</div><div><h3>🎴 Complete your Bingo Card</h3><p>Mark categories as you post. Complete any row, column, or diagonal → claim <strong>+5 pts</strong>. Full card → <strong>+20 pts + 🎴 Bingo Master</strong> badge!</p></div></div>
-        <div class="step"><div class="step-num">6</div><div><h3>📌 Key rules</h3><p>Duplicate book posts welcome. No rating system — share freely, judgment-free!</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>📖 Borrow & Return</h3><p>Hit <strong>"📖 Want to Borrow"</strong> on a Fair post, then borrow from your colleague. After reading, post a <strong>return review</strong> for <strong>+2 pts each</strong>.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div><h3>🎴 Complete your Bingo Card</h3><p>Go to Bingo Card tab → enter your name → click a square → link it to one of your recommendation posts. Complete any row, column, or diagonal → claim <strong>+5 pts</strong>. Full card → <strong>+20 pts + 🎴 Bingo Master</strong>!</p></div></div>
+        <div class="step"><div class="step-num">6</div><div><h3>📌 Key rules</h3><p>Each recommendation post can only be linked to one bingo square. Duplicate book posts welcome. No rating system — share freely, judgment-free!</p></div></div>
       </div>
       <div class="awards-row">
         <div class="award-card"><div class="medal">🥇</div><h4>Top Scorer</h4><p>Book voucher 1M VND</p></div>
@@ -457,7 +492,7 @@
       <div class="form-g">
         <label>Book Cover URL <span class="opt">(optional)</span></label>
         <input type="url" id="f-cover" placeholder="https://..." oninput="previewCover('f-cover-img','f-cover-preview',this.value)"/>
-        <div class="cover-preview" id="f-cover-preview"><img id="f-cover-img" src="" alt="cover preview" onerror="document.getElementById('f-cover-preview').style.display='none'"/></div>
+        <div class="cover-preview" id="f-cover-preview"><img id="f-cover-img" src="" alt="cover" onerror="document.getElementById('f-cover-preview').style.display='none'"/></div>
         <div class="form-hint">💡 Google Images → tìm tên sách → click ảnh → chuột phải → "Copy image address"</div>
       </div>
       <button class="btn-primary btn-full" id="addBookBtn" onclick="submitBook()">Post My Book 📚</button>
@@ -465,41 +500,30 @@
   </div>
 </div>
 
-<!-- ── DONATE BOOK TO LIBRARY MODAL ── -->
+<!-- ── DONATE BOOK MODAL ── -->
 <div class="overlay" id="donateOverlay" onclick="overlayClose(event,'donateOverlay')">
   <div class="modal">
-    <div class="m-header">
-      <h2>🏛️ Donate a Book to Library</h2>
-      <button class="m-close-x" onclick="closeOverlay('donateOverlay')">✕</button>
-    </div>
+    <div class="m-header"><h2>🏛️ Donate a Book to Library</h2><button class="m-close-x" onclick="closeOverlay('donateOverlay')">✕</button></div>
     <div class="m-body">
-      <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;line-height:1.6">Add a physical book you're happy to lend to the office library. Others can borrow, read, and post their recommendation!</p>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;line-height:1.6">Add a physical book you're happy to lend. Others can borrow, read, and post their recommendation!</p>
       <div class="form-g"><label>Book Title *</label><input type="text" id="d-title" placeholder="e.g. Sapiens"/></div>
       <div class="form-g"><label>Author *</label><input type="text" id="d-author" placeholder="e.g. Yuval Noah Harari"/></div>
       <div class="form-g"><label>Your Name * <span class="opt">(donor)</span></label><input type="text" id="d-donor" placeholder="e.g. Ly Dang"/></div>
+      <div class="form-g"><label>Short Description <span class="opt">(optional)</span></label><textarea id="d-desc" placeholder="A brief description..."></textarea></div>
       <div class="form-g">
-        <label>Bingo Categories <span class="opt">(Ctrl/Cmd + click để chọn nhiều)</span></label>
-        <select id="d-categories" multiple>
-          <option>A book under 150 pages</option>
-          <option>A book by an Asian author</option>
-          <option>A book that changed how you think</option>
-          <option>A book someone at Amanotes recommended</option>
-          <option>A book you've re-read more than once</option>
-          <option>A book published in the last 2 years</option>
-          <option>A book outside your usual genre</option>
-          <option>A book about a real person (biography/memoir)</option>
-          <option>A book with a one-word title</option>
-          <option>A book you discovered by accident</option>
-          <option>A book related to your work</option>
-          <option>⭐ WILDCARD — any book, no rules</option>
-          <option>A book you'd gift to a friend</option>
-          <option>A book that made you laugh or cry</option>
+        <label>Bingo Categories <span class="opt">(optional — hold Ctrl/Cmd to select multiple)</span></label>
+        <select id="d-categories" multiple style="height:140px">
+          <option>A book under 150 pages</option><option>A book by an Asian author</option>
+          <option>A book that changed how you think</option><option>A book someone at Amanotes recommended</option>
+          <option>A book you've re-read more than once</option><option>A book published in the last 2 years</option>
+          <option>A book outside your usual genre</option><option>A book about a real person (biography/memoir)</option>
+          <option>A book with a one-word title</option><option>A book you discovered by accident</option>
+          <option>A book related to your work</option><option>⭐ WILDCARD — any book, no rules</option>
+          <option>A book you'd gift to a friend</option><option>A book that made you laugh or cry</option>
           <option>A book originally written in a non-English language</option>
           <option>A book you started but haven't finished (finish it now!)</option>
         </select>
-        <div class="form-hint">💡 Một cuốn sách có thể phù hợp nhiều category — chọn hết đi!</div>
       </div>
-      <div class="form-g"><label>Short Description <span class="opt">(optional — what's it about?)</span></label><textarea id="d-desc" placeholder="A brief description of this book..."></textarea></div>
       <div class="form-g">
         <label>Book Cover URL <span class="opt">(optional)</span></label>
         <input type="url" id="d-cover" placeholder="https://..." oninput="previewCover('d-cover-img','d-cover-preview',this.value)"/>
@@ -510,52 +534,53 @@
   </div>
 </div>
 
-<!-- ── BORROW LIBRARY BOOK MODAL ── -->
+<!-- ── BORROW MODAL ── -->
 <div class="overlay" id="borrowOverlay" onclick="overlayClose(event,'borrowOverlay')">
   <div class="modal" style="max-width:420px">
-    <div class="m-header">
-      <h2>📖 Borrow from Library</h2>
-      <button class="m-close-x" onclick="closeOverlay('borrowOverlay')">✕</button>
-    </div>
+    <div class="m-header"><h2>📖 Borrow from Library</h2><button class="m-close-x" onclick="closeOverlay('borrowOverlay')">✕</button></div>
     <div class="m-body">
-      <p style="font-size:14px;color:var(--text-2);margin-bottom:6px" id="borrowBookName"></p>
-      <div class="return-prompt" style="margin-bottom:16px">
-        <p>📍 Pick up the physical copy from the office library shelf.</p>
-        <small>When you're done reading, come back and hit "Return" — then post your recommendation to earn points!</small>
-      </div>
-      <div class="form-g"><label>Your Name *</label><input type="text" id="borrow-name" placeholder="e.g. Ly Dang"/></div>
+      <p style="font-size:14px;color:var(--text-2);margin-bottom:12px" id="borrowBookName"></p>
+      <div class="return-prompt"><p>📍 Pick up the physical copy from the office library shelf.</p><small>When done, come back and hit "Return" — then post your recommendation to earn points!</small></div>
+      <div class="form-g" style="margin-top:16px"><label>Your Name *</label><input type="text" id="borrow-name" placeholder="e.g. Ly Dang"/></div>
       <button class="btn-primary btn-green btn-full" id="borrowBtn" onclick="submitBorrow()">I'm Reading This 📖</button>
     </div>
   </div>
 </div>
 
-<!-- ── RETURN LIBRARY BOOK MODAL ── -->
+<!-- ── RETURN MODAL ── -->
 <div class="overlay" id="returnOverlay" onclick="overlayClose(event,'returnOverlay')">
   <div class="modal" style="max-width:420px">
-    <div class="m-header">
-      <h2>✅ Return Book</h2>
-      <button class="m-close-x" onclick="closeOverlay('returnOverlay')">✕</button>
-    </div>
+    <div class="m-header"><h2>✅ Return Book</h2><button class="m-close-x" onclick="closeOverlay('returnOverlay')">✕</button></div>
     <div class="m-body">
       <p style="font-size:14px;color:var(--text-2);margin-bottom:16px" id="returnBookName"></p>
-      <div class="return-prompt">
-        <p>✅ Great — please return the physical book to the library shelf!</p>
-        <small>After returning, don't forget to post your recommendation on the Book Fair to earn points 🎉</small>
-      </div>
-      <div class="form-g" style="margin-top:16px"><label>Your Name * <span class="opt">(confirm you're the borrower)</span></label><input type="text" id="return-name" placeholder="e.g. Ly Dang"/></div>
+      <div class="return-prompt"><p>✅ Please return the physical book to the library shelf!</p><small>After returning, post your recommendation on the Book Fair to earn points 🎉</small></div>
+      <div class="form-g" style="margin-top:16px"><label>Your Name *</label><input type="text" id="return-name" placeholder="e.g. Ly Dang"/></div>
       <button class="btn-primary btn-full" id="returnBtn" onclick="submitReturn_lib()" style="margin-bottom:10px">Confirm Return ✅</button>
       <button class="act-btn" style="width:100%;justify-content:center;font-size:13px" onclick="closeOverlay('returnOverlay');openAddBook()">📝 Post my recommendation now →</button>
     </div>
   </div>
 </div>
 
-<!-- ── CLAIM BINGO BONUS MODAL ── -->
+<!-- ── LINK BOOK TO BINGO MODAL ── -->
+<div class="overlay" id="linkBookOverlay" onclick="overlayClose(event,'linkBookOverlay')">
+  <div class="modal" style="max-width:480px">
+    <div class="m-header">
+      <h2>🔗 Link a Recommendation</h2>
+      <button class="m-close-x" onclick="closeOverlay('linkBookOverlay')">✕</button>
+    </div>
+    <div class="m-body">
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:4px">Square: <strong id="linkSquareCat" style="color:var(--accent)"></strong></p>
+      <p style="font-size:12px;color:var(--text-3);margin-bottom:14px">Choose one of your recommendation posts to link to this square.</p>
+      <div class="link-book-list" id="linkBookList"></div>
+      <button class="btn-primary btn-full" id="linkBookBtn" onclick="submitBingoLink()" disabled>Link Selected Book</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CLAIM BINGO MODAL ── -->
 <div class="overlay" id="claimOverlay" onclick="overlayClose(event,'claimOverlay')">
   <div class="modal" style="max-width:420px">
-    <div class="m-header">
-      <h2 id="claimModalTitle">🎴 Claim Bingo Bonus</h2>
-      <button class="m-close-x" onclick="closeOverlay('claimOverlay')">✕</button>
-    </div>
+    <div class="m-header"><h2 id="claimModalTitle">🎴 Claim Bingo Bonus</h2><button class="m-close-x" onclick="closeOverlay('claimOverlay')">✕</button></div>
     <div class="m-body">
       <p style="font-size:14px;color:var(--text-2);margin-bottom:18px" id="claimModalDesc"></p>
       <div class="form-g"><label>Your Name *</label><input type="text" id="claim-name" placeholder="e.g. Ly Dang"/></div>
@@ -564,7 +589,7 @@
   </div>
 </div>
 
-<!-- ── CELEBRATION OVERLAY ── -->
+<!-- ── CELEBRATION ── -->
 <div class="celebration-overlay" id="celebrationOverlay" onclick="closeCelebration()">
   <div class="celebration-card" onclick="event.stopPropagation()">
     <div class="celebration-emoji" id="celebEmoji">🎉</div>
@@ -579,9 +604,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  var API = 'https://script.google.com/macros/s/AKfycbywGbYX9ElBiWhmW55tS2ACm4gPtk0cVY5fmOMiP_hg89oO-BfEcx8ljXk028Tcg-E7sA/exec';
+  var API='https://script.google.com/macros/s/AKfycbywGbYX9ElBiWhmW55tS2ACm4gPtk0cVY5fmOMiP_hg89oO-BfEcx8ljXk028Tcg-E7sA/exec';
 
-  var CATEGORIES = [
+  var CATEGORIES=[
     "A book under 150 pages","A book by an Asian author","A book that changed how you think",
     "A book someone at Amanotes recommended","A book you've re-read more than once",
     "A book published in the last 2 years","A book outside your usual genre",
@@ -594,46 +619,56 @@
   var BINGO_LINES=[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]];
   var COVER_COLORS=["#7B4F2E","#4A7B6F","#5B6E9D","#7B4F6E","#6B7B4F","#9D6B3E","#4F6E8B","#7B6B4F","#4F8B6B","#8B5B4F","#5B8B4F","#6E4F8B","#8B4A5B","#4A6B8B","#7B7B4F"];
 
+  // ── STATE ──────────────────────────────────────────────────────────────
   var BOOKS=[], LIBRARY=[], BINGO_BONUSES=[];
+  // Bingo: server-backed per user
+  var BINGO_LINKS=[];       // array of {name,squareIndex,bookId,bookTitle} from Sheet
+  var BINGO_USER='';        // current user name
   var currentBookId=null, editingBookId=null;
   var pendingBorrowId=null, pendingReturnId=null;
   var pendingClaimType=null, pendingClaimLines=0;
-  var libFilter='all';
+  var pendingSquareIndex=null, selectedLinkBookId=null;
+  var libFilter='all', libSearch='', libCatFilter='';
 
   // ── API ────────────────────────────────────────────────────────────────
   function apiCall(params){
     var url=new URL(API);
-    Object.keys(params).forEach(function(k){ url.searchParams.append(k,String(params[k])); });
+    Object.keys(params).forEach(function(k){url.searchParams.append(k,String(params[k]));});
     return fetch(url.toString(),{redirect:'follow'})
-      .then(function(r){ return r.text(); })
-      .then(function(t){ try{return JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));} });
+      .then(function(r){return r.text();})
+      .then(function(t){try{return JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}});
   }
 
   var LS={
-    get:function(k){ try{return JSON.parse(localStorage.getItem(k)||'{}');}catch(e){return{};} },
-    set:function(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+    get:function(k){try{return JSON.parse(localStorage.getItem(k)||'{}');}catch(e){return{};}},
+    set:function(k,v){localStorage.setItem(k,JSON.stringify(v));}
   };
 
   // ── HELPERS ────────────────────────────────────────────────────────────
-  function colorFor(id){ return COVER_COLORS[Math.abs(Number(id)-1)%COVER_COLORS.length]; }
-  function fmt(d){ return d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''; }
-  function catShort(c){ return String(c||'').replace('⭐ ',''); }
-  function today(){ return new Date().toISOString().split('T')[0]; }
-  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function colorFor(id){return COVER_COLORS[Math.abs(Number(String(id).replace('row_',''))-1)%COVER_COLORS.length];}
+  function fmt(d){return d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';} 
+  function catShort(c){return String(c||'').replace('⭐ ','');}
+  function today(){return new Date().toISOString().split('T')[0];}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function showToast(msg,type){
     var t=document.getElementById('toast');
-    t.textContent=msg; t.className='toast '+(type||'');
-    t.classList.add('show'); clearTimeout(t._t);
-    t._t=setTimeout(function(){ t.classList.remove('show'); },3500);
+    t.textContent=msg;t.className='toast '+(type||'');
+    t.classList.add('show');clearTimeout(t._t);
+    t._t=setTimeout(function(){t.classList.remove('show');},3500);
   }
   function updateWordCount(el,countId){
     var w=el.value.trim()===''?0:el.value.trim().split(/\s+/).length;
     var el2=document.getElementById(countId);
-    el2.textContent=w+' / 2000 words'; el2.className='word-count'+(w>2000?' over':'');
+    el2.textContent=w+' / 2000 words';el2.className='word-count'+(w>2000?' over':'');
   }
   function previewCover(imgId,wrapId,url){
     var wrap=document.getElementById(wrapId),img=document.getElementById(imgId);
     if(url){img.src=url;wrap.style.display='block';}else{wrap.style.display='none';}
+  }
+  function shuffle(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=a[i];a[i]=a[j];a[j]=tmp;}
+    return a;
   }
 
   // ── TABS ───────────────────────────────────────────────────────────────
@@ -641,10 +676,8 @@
     document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
     document.getElementById('tab-'+id).classList.add('active');
-    if(btn) btn.classList.add('active');
-    if(id==='bingo') renderBingo();
-    if(id==='leaderboard') renderLeaderboard();
-    if(id==='library') renderLibrary();
+    if(btn)btn.classList.add('active');
+    if(id==='leaderboard')renderLeaderboard();
   }
 
   // ── REFRESH ALL ────────────────────────────────────────────────────────
@@ -655,15 +688,9 @@
       BOOKS=Array.isArray(d)?d:[];
       BOOKS.forEach(function(b){if(!Array.isArray(b.returnReviews))b.returnReviews=[];});
     }).catch(function(e){BOOKS=[];showToast('Books error: '+e.message,'error');});
-    var p2=apiCall({action:'getLibrary'}).then(function(d){
-      LIBRARY=Array.isArray(d)?d:[];
-    }).catch(function(){LIBRARY=[];});
-    var p3=apiCall({action:'getBingoBonus'}).then(function(d){
-      BINGO_BONUSES=Array.isArray(d)?d:[];
-    }).catch(function(){BINGO_BONUSES=[];});
-    return Promise.all([p1,p2,p3]).then(function(){
-      renderBooks(); renderLibrary(); renderLeaderboard();
-    });
+    var p2=apiCall({action:'getLibrary'}).then(function(d){LIBRARY=Array.isArray(d)?d:[];}).catch(function(){LIBRARY=[];});
+    var p3=apiCall({action:'getBingoBonus'}).then(function(d){BINGO_BONUSES=Array.isArray(d)?d:[];}).catch(function(){BINGO_BONUSES=[];});
+    return Promise.all([p1,p2,p3]).then(function(){renderBooks();renderLibrary();renderLeaderboard();});
   }
 
   // ── BOOK FAIR ──────────────────────────────────────────────────────────
@@ -767,12 +794,14 @@
     document.getElementById('f-category').selectedIndex=0;
     document.getElementById('f-cover-preview').style.display='none';
     document.getElementById('f-wc').textContent='0 / 2000 words';
+    // Pre-fill name from bingo user
+    if(BINGO_USER)document.getElementById('f-name').value=BINGO_USER;
     openOverlay('addOverlay');
   }
   function openEditBook(bookId){
     var b=BOOKS.find(function(x){return String(x.id)===String(bookId);});
     if(!b)return;
-    editingBookId=bookId; closeOverlay('bookOverlay');
+    editingBookId=bookId;closeOverlay('bookOverlay');
     document.getElementById('addModalTitle').textContent='✏️ Edit Your Post';
     document.getElementById('addBookBtn').textContent='Save Changes ✓';
     document.getElementById('f-title').value=b.title||'';document.getElementById('f-author').value=b.author||'';
@@ -810,34 +839,49 @@
   }
 
   // ── LIBRARY ────────────────────────────────────────────────────────────
+  function onLibSearch(el){
+    libSearch=el.value.toLowerCase();
+    document.getElementById('libSearchClear').className='search-clear'+(libSearch?' show':'');
+    renderLibrary();
+  }
+  function clearLibSearch(){
+    document.getElementById('libSearch').value='';libSearch='';
+    document.getElementById('libSearchClear').className='search-clear';
+    renderLibrary();
+  }
+  function onLibCatFilter(el){
+    libCatFilter=el.value;
+    el.className='filter-select'+(libCatFilter?' active-filter':'');
+    renderLibrary();
+  }
   function filterLib(f,btn){
     libFilter=f;
     document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
     if(btn)btn.classList.add('active');
     renderLibrary();
   }
-
   function renderLibrary(){
     var grid=document.getElementById('libGrid');
-    var list=LIBRARY.filter(function(b){
-      if(libFilter==='available')return String(b.status).toLowerCase()!=='borrowed';
-      if(libFilter==='reading')return String(b.status).toLowerCase()==='borrowed';
-      return true;
+    var list=shuffle(LIBRARY).filter(function(b){
+      var titleMatch=!libSearch||(String(b.title||'').toLowerCase().indexOf(libSearch)>=0||String(b.author||'').toLowerCase().indexOf(libSearch)>=0);
+      var statusMatch=libFilter==='all'||( libFilter==='available'&&String(b.status).toLowerCase()!=='borrowed')||(libFilter==='reading'&&String(b.status).toLowerCase()==='borrowed');
+      var catMatch=!libCatFilter||(String(b.categories||'').indexOf(libCatFilter)>=0);
+      return titleMatch&&statusMatch&&catMatch;
     });
     document.getElementById('libCount').textContent=LIBRARY.length+' book'+(LIBRARY.length!==1?'s':'')+' in the library';
     if(!list.length){
-      grid.innerHTML='<div class="empty-state"><div class="big-emoji">🏛️</div><h3>'+(libFilter==='all'?'Library is empty!':'No books in this filter')+'</h3><p>'+(libFilter==='all'?'Donate the first book to get the library started.':'Try a different filter.')+'</p></div>';
+      grid.innerHTML='<div class="empty-state"><div class="big-emoji">🏛️</div><h3>No books found</h3><p>Try a different filter or search term.</p></div>';
       return;
     }
     grid.innerHTML=list.map(function(b){
       var col=colorFor(b.id||b.title);
       var isBorrowed=String(b.status).toLowerCase()==='borrowed';
       var cov=b.coverUrl?'<img class="lib-cover-img" src="'+esc(b.coverUrl)+'" onerror="this.style.display=\'none\'" alt=""><div class="lib-cover-overlay"></div>':'';
-      var statusBadge=isBorrowed
-        ?'<span class="status-badge reading">📖 Reading: '+esc(b.borrowedBy)+'</span>'
-        :'<span class="status-badge available">✅ Available</span>';
+      var statusBadge=isBorrowed?'<span class="status-badge reading">📖 '+esc(b.borrowedBy)+'</span>':'<span class="status-badge available">✅ Available</span>';
+      var cats=b.categories?String(b.categories).split('|').filter(Boolean):[];
+      var catTags=cats.length?'<div class="lib-cats">'+cats.map(function(c){return '<span class="lib-cat-tag">'+esc(catShort(c.trim()))+'</span>';}).join('')+'</div>':'';
       var footerBtn=isBorrowed
-        ?(b.borrowedBy?'<button class="btn-return" onclick="openReturn(\''+b.id+'\',\''+esc(b.title)+'\')">✅ Return This Book</button>':'<button class="btn-unavailable">📖 Currently being read</button>')
+        ?'<button class="btn-return" onclick="openReturn(\''+b.id+'\',\''+esc(b.title)+'\')">✅ Return This Book</button>'
         :'<button class="btn-borrow" onclick="openBorrow(\''+b.id+'\',\''+esc(b.title)+'\')">📖 I\'m Reading This</button>';
       return '<div class="lib-card">'+
         '<div class="lib-cover" style="background:'+col+'">'+cov+
@@ -845,16 +889,17 @@
         '<div class="lib-body">'+
         (b.description?'<div class="lib-desc">'+esc(b.description)+'</div>':'')+
         '<div class="lib-meta">Donated by '+esc(b.addedBy||'Amanotes')+(b.dateAdded?' · '+fmt(b.dateAdded):'')+'</div>'+
-        (b.categories&&b.categories.toString().trim()?'<div class="lib-cats">'+b.categories.toString().split('|').filter(Boolean).map(function(c){return '<span class="lib-cat-tag">'+esc(c.trim())+'</span>';}).join('')+'</div>':'')+
-        statusBadge+'</div>'+
+        statusBadge+catTags+'</div>'+
         '<div class="lib-footer">'+footerBtn+'</div></div>';
     }).join('');
   }
 
-  // ── DONATE BOOK ────────────────────────────────────────────────────────
   function openDonateBook(){
     ['d-title','d-author','d-donor','d-desc','d-cover'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('d-cover-preview').style.display='none';
+    var sel=document.getElementById('d-categories');
+    for(var i=0;i<sel.options.length;i++)sel.options[i].selected=false;
+    if(BINGO_USER)document.getElementById('d-donor').value=BINGO_USER;
     openOverlay('donateOverlay');
   }
   function submitDonateBook(){
@@ -862,96 +907,178 @@
     var donor=document.getElementById('d-donor').value.trim(),desc=document.getElementById('d-desc').value.trim();
     var cover=document.getElementById('d-cover').value.trim();
     if(!title||!author||!donor){alert('Please fill in title, author, and your name.');return;}
+    var sel=document.getElementById('d-categories');
+    var cats=[];for(var i=0;i<sel.options.length;i++){if(sel.options[i].selected)cats.push(sel.options[i].value);}
     var btn=document.getElementById('donateBtn');btn.textContent='Donating...';btn.disabled=true;
-    var catSel=document.getElementById('d-categories');
-    var cats=Array.from(catSel.selectedOptions).map(function(o){return o.value;}).join('|');
-    apiCall({action:'donateBook',title:title,author:author,addedBy:donor,description:desc,categories:cats,coverUrl:cover||'',date:today()})
+    apiCall({action:'donateBook',title:title,author:author,addedBy:donor,description:desc,coverUrl:cover||'',categories:cats.join('|'),date:today()})
       .then(function(res){
         if(res&&res.error)throw new Error(res.error);
-        ['d-title','d-author','d-donor','d-desc','d-cover'].forEach(function(id){document.getElementById(id).value='';});
-        document.getElementById('d-cover-preview').style.display='none';
-        closeOverlay('donateOverlay');
-        showToast('Book donated to the library! 🏛️ Thank you!');
-        return refreshAll();
+        closeOverlay('donateOverlay');showToast('Book donated! 🏛️ Thank you!');return refreshAll();
       }).catch(function(e){showToast('Could not donate: '+e.message,'error');})
       .finally(function(){btn.textContent='Donate to Library 🏛️';btn.disabled=false;});
   }
 
-  // ── BORROW LIBRARY BOOK ────────────────────────────────────────────────
-  function openBorrow(bookId,title){
-    pendingBorrowId=bookId;
-    document.getElementById('borrowBookName').textContent='📚 "'+title+'"';
-    document.getElementById('borrow-name').value='';
-    openOverlay('borrowOverlay');
-  }
+  function openBorrow(bookId,title){pendingBorrowId=bookId;document.getElementById('borrowBookName').textContent='📚 "'+title+'"';document.getElementById('borrow-name').value=BINGO_USER||'';openOverlay('borrowOverlay');}
   function submitBorrow(){
     var name=document.getElementById('borrow-name').value.trim();
     if(!name){alert('Please enter your name.');return;}
     var btn=document.getElementById('borrowBtn');btn.textContent='Updating...';btn.disabled=true;
     apiCall({action:'borrowLibraryBook',bookId:pendingBorrowId,borrowedBy:name,date:today()})
-      .then(function(res){
-        if(res&&res.error)throw new Error(res.error);
-        closeOverlay('borrowOverlay');
-        showToast('Enjoy your read! Return it when done 📖');
-        return refreshAll();
-      }).catch(function(e){showToast('Could not borrow: '+e.message,'error');})
+      .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('borrowOverlay');showToast('Enjoy your read! Return it when done 📖');return refreshAll();})
+      .catch(function(e){showToast('Could not borrow: '+e.message,'error');})
       .finally(function(){btn.textContent='I\'m Reading This 📖';btn.disabled=false;});
   }
 
-  // ── RETURN LIBRARY BOOK ────────────────────────────────────────────────
-  function openReturn(bookId,title){
-    pendingReturnId=bookId;
-    document.getElementById('returnBookName').textContent='📚 "'+title+'"';
-    document.getElementById('return-name').value='';
-    openOverlay('returnOverlay');
-  }
+  function openReturn(bookId,title){pendingReturnId=bookId;document.getElementById('returnBookName').textContent='📚 "'+title+'"';document.getElementById('return-name').value=BINGO_USER||'';openOverlay('returnOverlay');}
   function submitReturn_lib(){
     var name=document.getElementById('return-name').value.trim();
     if(!name){alert('Please enter your name.');return;}
     var btn=document.getElementById('returnBtn');btn.textContent='Returning...';btn.disabled=true;
     apiCall({action:'returnLibraryBook',bookId:pendingReturnId,date:today()})
-      .then(function(res){
-        if(res&&res.error)throw new Error(res.error);
-        closeOverlay('returnOverlay');
-        showToast('Book returned! Don\'t forget to post your recommendation 📝');
-        return refreshAll();
-      }).catch(function(e){showToast('Could not return: '+e.message,'error');})
+      .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('returnOverlay');showToast('Book returned! Don\'t forget to post your recommendation 📝');return refreshAll();})
+      .catch(function(e){showToast('Could not return: '+e.message,'error');})
       .finally(function(){btn.textContent='Confirm Return ✅';btn.disabled=false;});
   }
 
-  // ── BINGO ──────────────────────────────────────────────────────────────
-  function countLines(state){return BINGO_LINES.filter(function(l){return l.every(function(i){return state[i];});}).length;}
+  // ── BINGO — FULLY SERVER-BACKED ────────────────────────────────────────
+  function setBingoName(){
+    var name=document.getElementById('bingoNameInput').value.trim();
+    if(!name){alert('Please enter your name.');return;}
+    BINGO_USER=name;
+    LS.set('bb_user',{name:name});
+    document.getElementById('bingoNameBox').style.display='none';
+    document.getElementById('bingoNameDisplay').style.display='flex';
+    document.getElementById('bingoNameLabel').textContent=name;
+    loadBingoForUser(name);
+  }
+  function changeBingoName(){
+    BINGO_USER='';BINGO_LINKS=[];
+    document.getElementById('bingoNameDisplay').style.display='none';
+    document.getElementById('bingoArea').style.display='none';
+    document.getElementById('bingoLoading').style.display='none';
+    document.getElementById('bingoNameBox').style.display='flex';
+    document.getElementById('bingoNameInput').value='';
+  }
+  function loadBingoForUser(name){
+    document.getElementById('bingoLoading').style.display='block';
+    document.getElementById('bingoArea').style.display='none';
+    apiCall({action:'getBingoLinks',name:name})
+      .then(function(data){
+        BINGO_LINKS=Array.isArray(data)?data:[];
+        document.getElementById('bingoLoading').style.display='none';
+        document.getElementById('bingoArea').style.display='block';
+        renderBingo();
+      })
+      .catch(function(e){
+        document.getElementById('bingoLoading').style.display='none';
+        document.getElementById('bingoArea').style.display='block';
+        BINGO_LINKS=[];renderBingo();
+        showToast('Could not load bingo card: '+e.message,'error');
+      });
+  }
+
+  function countLines(links){
+    return BINGO_LINES.filter(function(line){
+      return line.every(function(idx){
+        return links.some(function(l){return Number(l.squareIndex)===idx;});
+      });
+    }).length;
+  }
+
   function renderBingo(){
-    var state=LS.get('bb_bingo'),claimed=LS.get('bb_bingo_claimed');
+    if(!BINGO_USER)return;
     var grid=document.getElementById('bingoGrid');
+    var linked=BINGO_LINKS.length;
+    var lines=countLines(BINGO_LINKS);
+
     grid.innerHTML=CATEGORIES.map(function(cat,i){
-      var isWild=cat.startsWith('⭐'),done=!!state[i];
-      return '<div class="bingo-cell'+(done?' done':'')+(isWild?' wild':'')+'" onclick="toggleSquare('+i+')">'+esc(cat)+'</div>';
+      var link=BINGO_LINKS.find(function(l){return Number(l.squareIndex)===i;});
+      var isWild=cat.startsWith('⭐');
+      var isDone=!!link;
+      var cls='bingo-cell'+(isDone?' done':'')+(isWild&&!isDone?' wild':'');
+      var bookSnippet=isDone?'<div class="bingo-cell-book">'+esc(link.bookTitle)+'</div>':'';
+      return '<div class="'+cls+'" onclick="clickBingoSquare('+i+')">'+
+        '<div class="bingo-cell-cat">'+esc(cat)+'</div>'+bookSnippet+'</div>';
     }).join('');
-    var done=Object.values(state).filter(Boolean).length,lines=countLines(state);
+
+    document.getElementById('bingoProgress').innerHTML=
+      '<strong>'+linked+'/16</strong> squares linked · <strong>'+lines+'</strong> line'+(lines!==1?'s':'')+' completed'+(lines>0?' 🎉':'');
+
+    // Claim banner
+    var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
     var claimedLines=claimed.lines||0,claimedFull=!!claimed.fullcard;
     var unclaimedLines=lines-claimedLines;
-    document.getElementById('bingoProgress').innerHTML='<strong>'+done+'/16</strong> squares marked · <strong>'+lines+'</strong> line'+(lines!==1?'s':'')+' completed'+(lines>0?' 🎉':'');
     var cl=document.getElementById('bingoClaim');
-    if(done===16&&!claimedFull){
-      cl.innerHTML='<div class="bingo-claim-banner"><div class="bingo-claim-text">🏆 Full Card Complete!<span>Claim your Bingo Master badge + 20 bonus pts</span></div><button class="btn-gold" onclick="openClaim(\'fullcard\','+lines+')">Claim! 🎴</button></div>';
+    if(linked===16&&!claimedFull){
+      cl.innerHTML='<div class="bingo-claim-banner"><div class="bingo-claim-text">🏆 Full Card Complete!<span>Claim your Bingo Master badge + 20 pts</span></div><button class="btn-gold" onclick="openClaim(\'fullcard\','+lines+')">Claim! 🎴</button></div>';
     }else if(unclaimedLines>0){
-      cl.innerHTML='<div class="bingo-claim-banner"><div class="bingo-claim-text">🎯 '+(unclaimedLines>1?unclaimedLines+' new lines':'New line')+'!<span>Claim +'+(unclaimedLines*5)+' bonus pts</span></div><button class="btn-gold" onclick="openClaim(\'line\','+lines+')">Claim! ✨</button></div>';
+      cl.innerHTML='<div class="bingo-claim-banner"><div class="bingo-claim-text">🎯 '+(unclaimedLines>1?unclaimedLines+' new lines':'New line')+'!<span>Claim +'+(unclaimedLines*5)+' pts</span></div><button class="btn-gold" onclick="openClaim(\'line\','+lines+')">Claim! ✨</button></div>';
     }else{cl.innerHTML='';}
   }
-  function toggleSquare(i){
-    var state=LS.get('bb_bingo'),before=countLines(state);
-    state[i]=!state[i];LS.set('bb_bingo',state);
-    var after=countLines(state),done=Object.values(state).filter(Boolean).length;
-    renderBingo();
-    if(after>before)showCelebration(done===16,after-before);
+
+  function clickBingoSquare(idx){
+    if(!BINGO_USER){alert('Please set your name first.');return;}
+    // Already linked?
+    var existing=BINGO_LINKS.find(function(l){return Number(l.squareIndex)===idx;});
+    if(existing){showToast('This square is already linked to "'+existing.bookTitle+'"');return;}
+    // Find my books not yet linked
+    var linkedBookIds=BINGO_LINKS.map(function(l){return String(l.bookId);});
+    var myBooks=BOOKS.filter(function(b){
+      return String(b.recommender).toLowerCase()===BINGO_USER.toLowerCase()&&linkedBookIds.indexOf(String(b.id))===-1;
+    });
+    pendingSquareIndex=idx;selectedLinkBookId=null;
+    document.getElementById('linkSquareCat').textContent=CATEGORIES[idx];
+    var listEl=document.getElementById('linkBookList');
+    if(!myBooks.length){
+      listEl.innerHTML='<div class="link-empty">😔 You have no unlinked recommendation posts yet.<br><br><a href="#" onclick="closeOverlay(\'linkBookOverlay\');openAddBook();return false;" style="color:var(--accent)">Post a book recommendation first →</a></div>';
+      document.getElementById('linkBookBtn').disabled=true;
+    }else{
+      listEl.innerHTML=myBooks.map(function(b){
+        return '<div class="link-book-item" onclick="selectLinkBook(\''+b.id+'\',this)">'+
+          '<input type="radio" name="linkBook" value="'+b.id+'"/>'+
+          '<div class="link-book-info">'+
+          '<div class="link-book-title">'+esc(b.title)+'</div>'+
+          '<div class="link-book-cat">'+esc(catShort(b.category))+'</div>'+
+          '</div></div>';
+      }).join('');
+      document.getElementById('linkBookBtn').disabled=true;
+    }
+    openOverlay('linkBookOverlay');
   }
+
+  function selectLinkBook(bookId,el){
+    selectedLinkBookId=bookId;
+    document.querySelectorAll('.link-book-item').forEach(function(e){e.classList.remove('selected');});
+    el.classList.add('selected');
+    el.querySelector('input[type=radio]').checked=true;
+    document.getElementById('linkBookBtn').disabled=false;
+  }
+
+  function submitBingoLink(){
+    if(!selectedLinkBookId||pendingSquareIndex===null)return;
+    var book=BOOKS.find(function(b){return String(b.id)===String(selectedLinkBookId);});
+    if(!book)return;
+    var linesBefore=countLines(BINGO_LINKS);
+    var btn=document.getElementById('linkBookBtn');btn.textContent='Linking...';btn.disabled=true;
+    apiCall({action:'addBingoLink',name:BINGO_USER,squareIndex:pendingSquareIndex,bookId:selectedLinkBookId,bookTitle:book.title,date:today()})
+      .then(function(res){
+        if(res&&res.error)throw new Error(res.error);
+        BINGO_LINKS.push({squareIndex:pendingSquareIndex,bookId:selectedLinkBookId,bookTitle:book.title});
+        closeOverlay('linkBookOverlay');
+        var linesAfter=countLines(BINGO_LINKS);
+        renderBingo();
+        if(linesAfter>linesBefore)showCelebration(BINGO_LINKS.length===16,linesAfter-linesBefore);
+        else showToast('Square linked to "'+book.title+'" ✓');
+      }).catch(function(e){showToast('Could not link: '+e.message,'error');})
+      .finally(function(){btn.textContent='Link Selected Book';btn.disabled=false;});
+  }
+
   function showCelebration(isFull,newLines){
     document.getElementById('celebEmoji').textContent=isFull?'🏆':'🎉';
     document.getElementById('celebTitle').textContent=isFull?'BINGO MASTER!':'BINGO!';
-    document.getElementById('celebSub').textContent=isFull?'Full card complete — all 16 categories! 🎊':'You completed '+(newLines>1?newLines+' new lines':'a line')+'! Keep going!';
+    document.getElementById('celebSub').textContent=isFull?'Full card complete — all 16 squares! 🎊':'You completed '+(newLines>1?newLines+' new lines':'a line')+'! Keep going!';
     document.getElementById('celebPts').textContent='+'+(isFull?20:newLines*5)+' pts';
-    document.getElementById('celebNote').textContent='Go to the Bingo Card tab to claim your bonus!';
+    document.getElementById('celebNote').textContent='Scroll down in the Bingo Card tab to claim your bonus!';
     document.getElementById('celebrationOverlay').classList.add('open');
   }
   function closeCelebration(){document.getElementById('celebrationOverlay').classList.remove('open');}
@@ -959,29 +1086,32 @@
   // ── CLAIM BINGO ────────────────────────────────────────────────────────
   function openClaim(type,lines){
     pendingClaimType=type;pendingClaimLines=lines;
-    var isFull=type==='fullcard',claimed=LS.get('bb_bingo_claimed'),unclaimedLines=isFull?0:(lines-(claimed.lines||0));
+    var isFull=type==='fullcard';
+    var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
+    var unclaimedLines=isFull?0:(lines-(claimed.lines||0));
     document.getElementById('claimModalTitle').textContent=isFull?'🏆 Claim Bingo Master!':'🎯 Claim Line Bonus!';
     document.getElementById('claimModalDesc').textContent=isFull
-      ?'You completed the full bingo card! Enter your name to claim +20 pts and your 🎴 Bingo Master badge.'
-      :'You completed '+(unclaimedLines>1?unclaimedLines+' lines':'a line')+'! Enter your name to claim +'+(unclaimedLines*5)+' pts.';
-    document.getElementById('claim-name').value='';
+      ?'You completed the full bingo card! Enter your name to confirm and claim +20 pts + 🎴 Bingo Master badge.'
+      :'You completed '+(unclaimedLines>1?unclaimedLines+' lines':'a line')+'! Claim +'+(unclaimedLines*5)+' pts.';
+    document.getElementById('claim-name').value=BINGO_USER||'';
     openOverlay('claimOverlay');
   }
   function submitClaim(){
     var name=document.getElementById('claim-name').value.trim();
     if(!name){alert('Please enter your name.');return;}
     var btn=document.getElementById('claimBtn');btn.textContent='Claiming...';btn.disabled=true;
-    var claimed=LS.get('bb_bingo_claimed'),unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-(claimed.lines||0));
+    var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
+    var unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-(claimed.lines||0));
     var pts=pendingClaimType==='fullcard'?20:unclaimedLines*5;
     apiCall({action:'claimBingo',name:name,type:pendingClaimType,lines:pendingClaimLines,pts:pts,date:today()})
       .then(function(res){
         if(res&&res.error)throw new Error(res.error);
-        var nc=LS.get('bb_bingo_claimed');
+        var nc=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
         if(pendingClaimType==='fullcard'){nc.fullcard=true;nc.lines=pendingClaimLines;}else{nc.lines=pendingClaimLines;}
-        LS.set('bb_bingo_claimed',nc);
+        LS.set('bb_bingo_claimed_'+BINGO_USER,nc);
         closeOverlay('claimOverlay');renderBingo();
         apiCall({action:'getBingoBonus'}).then(function(d){BINGO_BONUSES=Array.isArray(d)?d:[];renderLeaderboard();}).catch(function(){});
-        showToast(pendingClaimType==='fullcard'?'🎴 Bingo Master unlocked! +20 pts!':'Bonus claimed! +'+pts+' pts 🎉');
+        showToast(pendingClaimType==='fullcard'?'🎴 Bingo Master! +20 pts!':'Bonus claimed! +'+pts+' pts 🎉');
       }).catch(function(e){showToast('Could not claim: '+e.message,'error');})
       .finally(function(){btn.textContent='Claim My Bonus 🎉';btn.disabled=false;});
   }
@@ -1015,105 +1145,18 @@
       }).join('');
   }
 
-  // ── LIBRARY SEARCH + CATEGORY FILTER + SHUFFLE ────────────────────────
-  var libSearch = '';
-  var libCatFilter = '';
-
-  function onLibSearch(val) {
-    libSearch = val.trim().toLowerCase();
-    var clearBtn = document.getElementById('libSearchClear');
-    if (clearBtn) clearBtn.className = 'lib-search-clear' + (val ? ' show' : '');
-    renderLibrary();
-  }
-  function clearLibSearch() {
-    document.getElementById('libSearch').value = '';
-    onLibSearch('');
-  }
-  function onCatFilter(sel) {
-    libCatFilter = sel.value;
-    sel.className = 'lib-cat-filter' + (sel.value ? ' active' : '');
-    renderLibrary();
-  }
-
-  // Shuffle helper (Fisher-Yates)
-  function shuffle(arr) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-    }
-    return a;
-  }
-
-  // Override renderLibrary to apply search + category + shuffle
-  var _origRenderLibrary = renderLibrary;
-  renderLibrary = function() {
-    var grid = document.getElementById('libGrid');
-    var count = document.getElementById('libCount');
-    if (count) count.textContent = LIBRARY.length + ' book' + (LIBRARY.length !== 1 ? 's' : '') + ' in the library';
-
-    // 1. Status filter
-    var list = LIBRARY.filter(function(b) {
-      if (libFilter === 'available') return String(b.status).toLowerCase() !== 'borrowed';
-      if (libFilter === 'reading')   return String(b.status).toLowerCase() === 'borrowed';
-      return true;
-    });
-    // 2. Search filter
-    if (libSearch) {
-      list = list.filter(function(b) {
-        return (b.title  && b.title.toLowerCase().indexOf(libSearch) !== -1) ||
-               (b.author && b.author.toLowerCase().indexOf(libSearch) !== -1);
-      });
-    }
-    // 3. Bingo category filter
-    if (libCatFilter) {
-      list = list.filter(function(b) {
-        var cats = b.categories ? b.categories.toString() : '';
-        return cats.indexOf(libCatFilter) !== -1;
-      });
-    }
-    // 4. Shuffle
-    list = shuffle(list);
-
-    if (!list.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="big-emoji">🏛️</div><h3>' +
-        (libSearch || libCatFilter ? 'No matching books' : (libFilter === 'all' ? 'Library is empty!' : 'No books in this filter')) +
-        '</h3><p>' + (libSearch || libCatFilter ? 'Try a different search or filter.' : (libFilter === 'all' ? 'Donate the first book!' : 'Try a different filter.')) + '</p></div>';
-      return;
-    }
-    grid.innerHTML = list.map(function(b) {
-      var col = colorFor(b.id || b.title);
-      var isBorrowed = String(b.status).toLowerCase() === 'borrowed';
-      var cov = b.coverUrl ? '<img class="lib-cover-img" src="' + esc(b.coverUrl) + '" onerror="this.style.display=\'none\'" alt=""><div class="lib-cover-overlay"></div>' : '';
-      var statusBadge = isBorrowed
-        ? '<span class="status-badge reading">📖 Reading: ' + esc(b.borrowedBy) + '</span>'
-        : '<span class="status-badge available">✅ Available</span>';
-      var footerBtn = isBorrowed
-        ? (b.borrowedBy ? '<button class="btn-return" onclick="openReturn(\'' + b.id + '\',\'' + esc(b.title) + '\')">✅ Return This Book</button>' : '<button class="btn-unavailable">📖 Currently being read</button>')
-        : '<button class="btn-borrow" onclick="openBorrow(\'' + b.id + '\',\'' + esc(b.title) + '\')">📖 I\'m Reading This</button>';
-      var catTags = (b.categories && b.categories.toString().trim())
-        ? '<div class="lib-cats">' + b.categories.toString().split('|').filter(Boolean).map(function(c) {
-            return '<span class="lib-cat-tag">' + esc(c.trim()) + '</span>';
-          }).join('') + '</div>' : '';
-      return '<div class="lib-card">' +
-        '<div class="lib-cover" style="background:' + col + '">' + cov +
-        '<div class="lib-cover-text"><div class="lib-cover-title">' + esc(b.title) + '</div><div class="lib-cover-author">' + esc(b.author) + '</div></div></div>' +
-        '<div class="lib-body">' +
-        (b.description ? '<div class="lib-desc">' + esc(b.description) + '</div>' : '') +
-        '<div class="lib-meta">Donated by ' + esc(b.addedBy || 'Amanotes') + (b.dateAdded ? ' · ' + fmt(b.dateAdded) : '') + '</div>' +
-        catTags + statusBadge + '</div>' +
-        '<div class="lib-footer">' + footerBtn + '</div></div>';
-    }).join('');
-  };
-
   // ── OVERLAYS ───────────────────────────────────────────────────────────
   function openOverlay(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
   function closeOverlay(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
   function overlayClose(e,id){if(e.target===document.getElementById(id))closeOverlay(id);}
 
   // ── INIT ───────────────────────────────────────────────────────────────
+  // Restore saved username
+  var savedUser=LS.get('bb_user');
+  if(savedUser&&savedUser.name){
+    document.getElementById('bingoNameInput').value=savedUser.name;
+  }
   refreshAll();
-  renderBingo();
 </script>
 </body>
 </html>
