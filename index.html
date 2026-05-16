@@ -31,6 +31,12 @@
     .btn-primary:active { transform: scale(0.97); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-secondary { background: var(--surface); color: var(--accent); border: 1.5px solid var(--accent-light); padding: 9px 18px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.2s, border-color 0.2s; }
+    .btn-secondary:hover { background: var(--accent-lighter); border-color: var(--accent); }
+    .auth-status { font-size: 13px; color: var(--text-2); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .login-hint { font-size: 12px; color: var(--text-3); margin-top: 8px; line-height: 1.5; }
+
     .tabs-bar { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; padding: 0 32px; gap: 4px; overflow-x: auto; }
     .tab-btn { padding: 13px 18px; font-size: 14px; font-weight: 500; color: var(--text-2); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s; font-family: inherit; }
     .tab-btn:hover { color: var(--text); }
@@ -303,7 +309,11 @@
     <h1>📚 Amanotes Book Bingo Fair</h1>
     <p>Share books · Borrow · Earn points · Build reading culture 🌱</p>
   </div>
-  <button class="btn-primary" onclick="openAddBook()">+ Add Your Book</button>
+  <div class="header-actions">
+    <span class="auth-status" id="authStatus" title=""></span>
+    <button type="button" class="btn-secondary" id="authBtn" onclick="onAuthButtonClick()">Sign in</button>
+    <button type="button" class="btn-primary" onclick="openAddBook()">+ Add Your Book</button>
+  </div>
 </header>
 
 <div class="tabs-bar">
@@ -379,15 +389,14 @@
         <p>Link each square to a book you've recommended.<br>Complete any row, column, or diagonal to finish a line!</p>
       </div>
 
-      <!-- Name box -->
-      <div class="bingo-name-box" id="bingoNameBox">
-        <label>Your name:</label>
-        <input type="text" id="bingoNameInput" placeholder="e.g. Ly Dang" onkeydown="if(event.key==='Enter')setBingoName()"/>
-        <button class="bingo-name-set" id="bingoNameBtn" onclick="setBingoName()">Load My Card →</button>
+      <!-- Sign in required for bingo -->
+      <div class="bingo-name-box" id="bingoGuestPrompt">
+        <p style="font-size:14px;color:var(--text-2);flex:1;line-height:1.5;margin:0">Sign in with your <strong>@amanotes.com</strong> email to view and edit your bingo card.</p>
+        <button type="button" class="btn-primary" onclick="openLoginModal()">Sign in</button>
       </div>
       <div id="bingoNameDisplay" style="display:none" class="bingo-name-box">
         <div class="bingo-name-display">Bingo card for <strong id="bingoNameLabel"></strong></div>
-        <button class="bingo-name-change" onclick="changeBingoName()">Change name</button>
+        <button type="button" class="bingo-name-set" onclick="loadBingoForUser(BINGO_USER)">Refresh card</button>
       </div>
 
       <div id="bingoArea" style="display:none">
@@ -601,10 +610,34 @@
   </div>
 </div>
 
+<!-- ── LOGIN (company email OTP) ── -->
+<div class="overlay" id="loginOverlay" onclick="overlayClose(event,'loginOverlay')">
+  <div class="modal" style="max-width:440px" onclick="event.stopPropagation()">
+    <div class="m-header">
+      <h2>🔐 Sign in</h2>
+      <button type="button" class="m-close-x" onclick="closeOverlay('loginOverlay')">✕</button>
+    </div>
+    <div class="m-body">
+      <div id="loginStep1">
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:14px">Use your Amanotes email. We’ll send a 6-digit code.</p>
+        <div class="form-g"><label>Work email</label><input type="email" id="loginEmail" placeholder="you@amanotes.com" autocomplete="username"/></div>
+        <button type="button" class="btn-primary btn-full" id="loginSendBtn" onclick="sendLoginCode()">Send code</button>
+      </div>
+      <div id="loginStep2" style="display:none">
+        <div class="form-g"><label>6-digit code</label><input type="text" id="loginCode" inputmode="numeric" maxlength="8" placeholder="123456" autocomplete="one-time-code"/></div>
+        <div class="form-g"><label>Display name <span class="opt">(shown on leaderboard)</span></label><input type="text" id="loginDisplayName" placeholder="e.g. Ly Dang"/></div>
+        <button type="button" class="btn-primary btn-full" id="loginVerifyBtn" onclick="verifyLoginCode()">Verify & sign in</button>
+        <p class="login-hint"><button type="button" class="bingo-name-change" onclick="loginBackToEmail()" style="margin:0">← Use a different email</button></p>
+      </div>
+      <p class="login-hint" id="loginErr" style="color:#c0392b;display:none"></p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-  var API='https://script.google.com/macros/s/AKfycbywGbYX9ElBiWhmW55tS2ACm4gPtk0cVY5fmOMiP_hg89oO-BfEcx8ljXk028Tcg-E7sA/exec';
+  var API='https://script.google.com/macros/s/AKfycbyCye97QRGke46bJVZ4untXJ4nzK0XN6iw-xWFPZVPNWppdSmgL8gB64jDF5guJTW7DZA/exec';
 
   var CATEGORIES=[
     "A book under 150 pages","A book by an Asian author","A book that changed how you think",
@@ -620,29 +653,198 @@
   var COVER_COLORS=["#7B4F2E","#4A7B6F","#5B6E9D","#7B4F6E","#6B7B4F","#9D6B3E","#4F6E8B","#7B6B4F","#4F8B6B","#8B5B4F","#5B8B4F","#6E4F8B","#8B4A5B","#4A6B8B","#7B7B4F"];
 
   // ── STATE ──────────────────────────────────────────────────────────────
+  var AUTH=null; // { sessionToken, email, displayName } when signed in
   var BOOKS=[], LIBRARY=[], BINGO_BONUSES=[];
-  // Bingo: server-backed per user
-  var BINGO_LINKS=[];       // array of {name,squareIndex,bookId,bookTitle} from Sheet
-  var BINGO_USER='';        // current user name
+  // Bingo: server-backed per user (name = signed-in display name)
+  var BINGO_LINKS=[];
+  var BINGO_USER='';
   var currentBookId=null, editingBookId=null;
   var pendingBorrowId=null, pendingReturnId=null;
   var pendingClaimType=null, pendingClaimLines=0;
   var pendingSquareIndex=null, selectedLinkBookId=null;
   var libFilter='all', libSearch='', libCatFilter='';
+  var pendingLoginEmail='';
 
   // ── API ────────────────────────────────────────────────────────────────
   function apiCall(params){
+    var merged={};
+    Object.keys(params).forEach(function(k){merged[k]=params[k];});
+    if(AUTH&&AUTH.sessionToken)merged.sessionToken=AUTH.sessionToken;
     var url=new URL(API);
-    Object.keys(params).forEach(function(k){url.searchParams.append(k,String(params[k]));});
+    Object.keys(merged).forEach(function(k){url.searchParams.append(k,String(merged[k]));});
     return fetch(url.toString(),{redirect:'follow'})
       .then(function(r){return r.text();})
-      .then(function(t){try{return JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}});
+      .then(function(t){
+        var data;
+        try{data=JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}
+        if(data&&String(data.error)==='Unauthorized'){
+          clearAuthSession();
+          updateAuthUI();
+          updateBingoAuthPanel();
+          showToast('Session expired. Please sign in again.','error');
+        }
+        return data;
+      });
   }
 
   var LS={
     get:function(k){try{return JSON.parse(localStorage.getItem(k)||'{}');}catch(e){return{};}},
     set:function(k,v){localStorage.setItem(k,JSON.stringify(v));}
   };
+
+  function loadAuthFromStorage(){
+    var o=LS.get('bb_auth');
+    if(o&&o.sessionToken){AUTH=o;return;}
+    AUTH=null;
+  }
+  function saveAuthSession(o){
+    AUTH=o;
+    if(o&&o.sessionToken)LS.set('bb_auth',o);
+    else localStorage.removeItem('bb_auth');
+  }
+  function clearAuthSession(){
+    AUTH=null;
+    localStorage.removeItem('bb_auth');
+  }
+
+  function pingSession(){
+    if(!AUTH||!AUTH.sessionToken)return Promise.resolve(false);
+    return apiCall({action:'sessionPing'}).then(function(d){
+      if(d&&d.ok){
+        AUTH.email=d.email||AUTH.email;
+        AUTH.displayName=d.displayName||AUTH.displayName;
+        saveAuthSession(AUTH);
+        return true;
+      }
+      clearAuthSession();
+      return false;
+    }).catch(function(){clearAuthSession();return false;});
+  }
+
+  function updateAuthUI(){
+    var btn=document.getElementById('authBtn');
+    var st=document.getElementById('authStatus');
+    if(AUTH&&AUTH.sessionToken){
+      btn.textContent='Sign out';
+      var label=AUTH.displayName||AUTH.email||'';
+      st.textContent=label;
+      st.title=AUTH.email||'';
+      document.body.classList.add('is-authed');
+    }else{
+      btn.textContent='Sign in';
+      st.textContent='';
+      st.title='';
+      document.body.classList.remove('is-authed');
+    }
+  }
+
+  function updateBingoAuthPanel(){
+    var guest=document.getElementById('bingoGuestPrompt');
+    var disp=document.getElementById('bingoNameDisplay');
+    if(AUTH&&AUTH.sessionToken){
+      guest.style.display='none';
+      disp.style.display='flex';
+      BINGO_USER=AUTH.displayName||((AUTH.email||'').split('@')[0])||'';
+      document.getElementById('bingoNameLabel').textContent=BINGO_USER;
+      LS.set('bb_user',{name:BINGO_USER});
+      loadBingoForUser(BINGO_USER);
+    }else{
+      BINGO_USER='';
+      BINGO_LINKS=[];
+      guest.style.display='flex';
+      disp.style.display='none';
+      document.getElementById('bingoArea').style.display='none';
+      document.getElementById('bingoLoading').style.display='none';
+      document.getElementById('bingoClaim').innerHTML='';
+    }
+  }
+
+  function requireAuth(){
+    if(AUTH&&AUTH.sessionToken)return true;
+    showToast('Please sign in with your company email first.','error');
+    openLoginModal();
+    return false;
+  }
+
+  function onAuthButtonClick(){
+    if(AUTH&&AUTH.sessionToken)logout();
+    else openLoginModal();
+  }
+
+  function logout(){
+    if(AUTH&&AUTH.sessionToken){
+      apiCall({action:'invalidateSession'}).catch(function(){});
+    }
+    clearAuthSession();
+    updateAuthUI();
+    updateBingoAuthPanel();
+    renderBooks();
+    showToast('Signed out.');
+  }
+
+  function openLoginModal(){
+    document.getElementById('loginErr').style.display='none';
+    document.getElementById('loginStep1').style.display='block';
+    document.getElementById('loginStep2').style.display='none';
+    document.getElementById('loginEmail').value=pendingLoginEmail||'';
+    document.getElementById('loginCode').value='';
+    document.getElementById('loginDisplayName').value='';
+    openOverlay('loginOverlay');
+  }
+  function loginBackToEmail(){
+    document.getElementById('loginStep1').style.display='block';
+    document.getElementById('loginStep2').style.display='none';
+    document.getElementById('loginErr').style.display='none';
+  }
+  function sendLoginCode(){
+    var em=document.getElementById('loginEmail').value.trim().toLowerCase();
+    var btn=document.getElementById('loginSendBtn');
+    if(!em){showToast('Enter your work email.','error');return;}
+    btn.disabled=true;btn.textContent='Sending…';
+    document.getElementById('loginErr').style.display='none';
+    apiCall({action:'requestLoginCode',email:em})
+      .then(function(res){
+        if(res&&res.error)throw new Error(res.error);
+        pendingLoginEmail=em;
+        document.getElementById('loginStep1').style.display='none';
+        document.getElementById('loginStep2').style.display='block';
+        var lp=em.split('@')[0]||'';
+        document.getElementById('loginDisplayName').value=lp.replace(/[._]/g,' ');
+        showToast('Check your inbox for the code.');
+      })
+      .catch(function(e){
+        document.getElementById('loginErr').textContent=e.message||String(e);
+        document.getElementById('loginErr').style.display='block';
+      })
+      .finally(function(){btn.disabled=false;btn.textContent='Send code';});
+  }
+  function verifyLoginCode(){
+    var code=document.getElementById('loginCode').value.trim().replace(/\s/g,'');
+    var dn=document.getElementById('loginDisplayName').value.trim();
+    var btn=document.getElementById('loginVerifyBtn');
+    if(!pendingLoginEmail||!code){showToast('Enter the code from your email.','error');return;}
+    btn.disabled=true;btn.textContent='Verifying…';
+    document.getElementById('loginErr').style.display='none';
+    var payload={action:'verifyLoginCode',email:pendingLoginEmail,code:code};
+    if(dn)payload.display_name=dn;
+    apiCall(payload)
+      .then(function(res){
+        if(res&&res.error)throw new Error(res.error);
+        if(!res||!res.sessionToken)throw new Error('Invalid response');
+        saveAuthSession({sessionToken:res.sessionToken,email:res.email||pendingLoginEmail,displayName:res.displayName||dn});
+        closeOverlay('loginOverlay');
+        updateAuthUI();
+        updateBingoAuthPanel();
+        renderBooks();
+        showToast('Welcome, '+(AUTH.displayName||AUTH.email)+'!');
+        return refreshAll();
+      })
+      .catch(function(e){
+        document.getElementById('loginErr').textContent=e.message||String(e);
+        document.getElementById('loginErr').style.display='block';
+      })
+      .finally(function(){btn.disabled=false;btn.textContent='Verify & sign in';});
+  }
 
   // ── HELPERS ────────────────────────────────────────────────────────────
   function colorFor(id){return COVER_COLORS[Math.abs(Number(String(id).replace('row_',''))-1)%COVER_COLORS.length];}
@@ -714,30 +916,36 @@
   }
 
   function toggleLike(bookId){
+    if(!requireAuth())return;
     var likes=LS.get('bb_likes'),book=BOOKS.find(function(b){return String(b.id)===String(bookId);});
     if(!book)return;
     var delta=likes[bookId]?-1:1;
-    if(delta===1){likes[bookId]=true;book.likes=(book.likes||0)+1;}else{delete likes[bookId];book.likes=Math.max(0,(book.likes||0)-1);}
-    LS.set('bb_likes',likes);
-    var btn=document.getElementById('l-'+bookId),cnt=document.getElementById('lc-'+bookId);
-    if(btn)btn.className='act-btn '+(likes[bookId]?'liked':'');
-    if(cnt)cnt.textContent=book.likes;
-    if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
-    renderLeaderboard();
-    apiCall({action:'like',bookId:bookId,delta:delta}).catch(function(){});
+    apiCall({action:'like',bookId:bookId,delta:delta}).then(function(res){
+      if(res&&res.error){showToast(res.error,'error');return;}
+      if(delta===1){likes[bookId]=true;book.likes=(book.likes||0)+1;}else{delete likes[bookId];book.likes=Math.max(0,(book.likes||0)-1);}
+      LS.set('bb_likes',likes);
+      var btn=document.getElementById('l-'+bookId),cnt=document.getElementById('lc-'+bookId);
+      if(btn)btn.className='act-btn '+(likes[bookId]?'liked':'');
+      if(cnt)cnt.textContent=book.likes;
+      if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
+      renderLeaderboard();
+    }).catch(function(e){showToast('Could not update like: '+e.message,'error');});
   }
 
   function toggleBorrow(bookId){
+    if(!requireAuth())return;
     var borrows=LS.get('bb_borrows'),book=BOOKS.find(function(b){return String(b.id)===String(bookId);});
     if(!book)return;
     var delta=borrows[bookId]?-1:1;
-    if(delta===1){borrows[bookId]=true;book.wantToBorrow=(book.wantToBorrow||0)+1;}else{delete borrows[bookId];book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1);}
-    LS.set('bb_borrows',borrows);
-    var btn=document.getElementById('br-'+bookId),cnt=document.getElementById('bc-'+bookId);
-    if(btn)btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
-    if(cnt)cnt.textContent=book.wantToBorrow;
-    if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
-    apiCall({action:'borrow',bookId:bookId,delta:delta}).catch(function(){});
+    apiCall({action:'borrow',bookId:bookId,delta:delta}).then(function(res){
+      if(res&&res.error){showToast(res.error,'error');return;}
+      if(delta===1){borrows[bookId]=true;book.wantToBorrow=(book.wantToBorrow||0)+1;}else{delete borrows[bookId];book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1);}
+      LS.set('bb_borrows',borrows);
+      var btn=document.getElementById('br-'+bookId),cnt=document.getElementById('bc-'+bookId);
+      if(btn)btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
+      if(cnt)cnt.textContent=book.wantToBorrow;
+      if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
+    }).catch(function(e){showToast('Could not update borrow: '+e.message,'error');});
   }
 
   // ── BOOK MODAL ─────────────────────────────────────────────────────────
@@ -753,6 +961,11 @@
       return '<div class="rr-item"><div class="rr-reviewer">📖 '+esc(r.reviewerName||r.name)+' · '+fmt(r.date)+'</div><div class="rr-text">'+esc(r.text)+'</div></div>';
     }).join(''):'<p class="rr-empty">No return reviews yet — borrow it and be the first!</p>';
     var frHtml=(b.fullReview&&b.fullReview.toString().trim())?'<div class="m-full-review-label">📖 Full Review</div><div class="m-full-review">'+esc(b.fullReview)+'</div>':'';
+    var canEdit=AUTH&&AUTH.sessionToken&&String(b.recommender||'').toLowerCase()===String(AUTH.displayName||'').toLowerCase();
+    var editBtn=canEdit?'<button class="act-btn" onclick="openEditBook(\''+bookId+'\')" style="margin-left:auto">✏️ Edit</button>':'';
+    var rrNameBlock=AUTH&&AUTH.sessionToken
+      ?'<p style="font-size:12px;color:var(--text-2);margin-bottom:8px">Posting as <strong>'+esc(AUTH.displayName)+'</strong></p><input type="hidden" id="rr-name" value="'+esc(AUTH.displayName)+'"/>'
+      :'<div class="form-g" style="margin-top:14px"><label>Your Name</label><input type="text" id="rr-name" placeholder="Your name"/></div>';
     document.getElementById('bookModalContent').innerHTML=
       '<div class="m-cover" style="background:'+col+'">'+cov+
       '<button class="m-close-btn" onclick="closeOverlay(\'bookOverlay\')">✕</button>'+
@@ -763,30 +976,37 @@
       '<div class="m-actions">'+
       '<button class="act-btn '+(liked?'liked':'')+'" onclick="toggleLike(\''+bookId+'\')">👍 '+(b.likes||0)+' Likes</button>'+
       '<button class="act-btn '+(borrowed?'borrowed':'')+'" onclick="toggleBorrow(\''+bookId+'\')">📖 '+(b.wantToBorrow||0)+' Want to Borrow</button>'+
-      '<button class="act-btn" onclick="openEditBook(\''+bookId+'\')" style="margin-left:auto">✏️ Edit</button>'+
+      editBtn+
       '</div>'+
       '<div class="return-section"><h4>Return Reviews ('+returns.length+')</h4><div id="rrList">'+rrHtml+'</div>'+
       '<button class="act-btn" style="margin-top:12px;background:var(--accent-lighter);border-color:var(--accent-light);color:var(--accent)" onclick="document.getElementById(\'rrForm\').classList.toggle(\'hidden\')">✍️ Post a Return Review</button>'+
       '<div class="rr-form hidden" id="rrForm">'+
-      '<div class="form-g" style="margin-top:14px"><label>Your Name</label><input type="text" id="rr-name" placeholder="Your name"/></div>'+
+      rrNameBlock+
       '<div class="form-g"><label>Your Return Review</label><textarea id="rr-text" placeholder="I borrowed this and it made me ___..."></textarea></div>'+
       '<button class="btn-primary" id="rrSubmitBtn" onclick="submitReturnReview(\''+bookId+'\')">Submit Review</button>'+
       '</div></div></div>';
   }
   function submitReturnReview(bookId){
-    var name=document.getElementById('rr-name').value.trim(),text=document.getElementById('rr-text').value.trim();
-    if(!name||!text){alert('Please fill in your name and review.');return;}
+    if(!requireAuth())return;
+    var nameEl=document.getElementById('rr-name');
+    var name=nameEl&&nameEl.tagName==='INPUT'?nameEl.value.trim():'';
+    var text=document.getElementById('rr-text').value.trim();
+    if(!text){alert('Please write your review.');return;}
+    if(!name){alert('Please sign in to post a return review.');return;}
     var btn=document.getElementById('rrSubmitBtn');btn.textContent='Submitting...';btn.disabled=true;
     apiCall({action:'addReturn',bookId:bookId,reviewerName:name,text:text,date:today()})
-      .then(function(){
+      .then(function(res){
+        if(res&&res.error)throw new Error(res.error);
         var book=BOOKS.find(function(b){return String(b.id)===String(bookId);});
         if(book){if(!book.returnReviews)book.returnReviews=[];book.returnReviews.push({reviewerName:name,text:text,date:today()});}
         renderBookModal(bookId);renderLeaderboard();showToast('Return review posted! +2 pts 🎉');
-      }).catch(function(e){showToast('Could not submit: '+e.message,'error');btn.textContent='Submit Review';btn.disabled=false;});
+      }).catch(function(e){showToast('Could not submit: '+e.message,'error');})
+      .finally(function(){btn.textContent='Submit Review';btn.disabled=false;});
   }
 
   // ── ADD / EDIT BOOK ────────────────────────────────────────────────────
   function openAddBook(){
+    if(!requireAuth())return;
     editingBookId=null;
     document.getElementById('addModalTitle').textContent='📝 Add Your Book';
     document.getElementById('addBookBtn').textContent='Post My Book 📚';
@@ -794,18 +1014,24 @@
     document.getElementById('f-category').selectedIndex=0;
     document.getElementById('f-cover-preview').style.display='none';
     document.getElementById('f-wc').textContent='0 / 2000 words';
-    // Pre-fill name from bingo user
-    if(BINGO_USER)document.getElementById('f-name').value=BINGO_USER;
+    document.getElementById('f-name').value=AUTH.displayName||'';
+    document.getElementById('f-name').readOnly=true;
     openOverlay('addOverlay');
   }
   function openEditBook(bookId){
+    if(!requireAuth())return;
     var b=BOOKS.find(function(x){return String(x.id)===String(bookId);});
     if(!b)return;
+    if(!AUTH||String(b.recommender||'').toLowerCase()!==String(AUTH.displayName||'').toLowerCase()){
+      showToast('You can only edit your own posts.','error');return;
+    }
     editingBookId=bookId;closeOverlay('bookOverlay');
     document.getElementById('addModalTitle').textContent='✏️ Edit Your Post';
     document.getElementById('addBookBtn').textContent='Save Changes ✓';
     document.getElementById('f-title').value=b.title||'';document.getElementById('f-author').value=b.author||'';
-    document.getElementById('f-name').value=b.recommender||'';document.getElementById('f-review').value=b.microReview||'';
+    document.getElementById('f-name').value=AUTH.displayName||b.recommender||'';
+    document.getElementById('f-name').readOnly=true;
+    document.getElementById('f-review').value=b.microReview||'';
     document.getElementById('f-fullreview').value=b.fullReview||'';document.getElementById('f-cover').value=b.coverUrl||'';
     var sel=document.getElementById('f-category');
     for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===b.category){sel.selectedIndex=i;break;}}
@@ -814,6 +1040,7 @@
     openOverlay('addOverlay');
   }
   function submitBook(){
+    if(!requireAuth())return;
     var title=document.getElementById('f-title').value.trim(),author=document.getElementById('f-author').value.trim();
     var cat=document.getElementById('f-category').value,name=document.getElementById('f-name').value.trim();
     var review=document.getElementById('f-review').value.trim(),full=document.getElementById('f-fullreview').value.trim();
@@ -895,14 +1122,17 @@
   }
 
   function openDonateBook(){
+    if(!requireAuth())return;
     ['d-title','d-author','d-donor','d-desc','d-cover'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('d-cover-preview').style.display='none';
     var sel=document.getElementById('d-categories');
     for(var i=0;i<sel.options.length;i++)sel.options[i].selected=false;
-    if(BINGO_USER)document.getElementById('d-donor').value=BINGO_USER;
+    document.getElementById('d-donor').value=AUTH.displayName||'';
+    document.getElementById('d-donor').readOnly=true;
     openOverlay('donateOverlay');
   }
   function submitDonateBook(){
+    if(!requireAuth())return;
     var title=document.getElementById('d-title').value.trim(),author=document.getElementById('d-author').value.trim();
     var donor=document.getElementById('d-donor').value.trim(),desc=document.getElementById('d-desc').value.trim();
     var cover=document.getElementById('d-cover').value.trim();
@@ -918,10 +1148,17 @@
       .finally(function(){btn.textContent='Donate to Library 🏛️';btn.disabled=false;});
   }
 
-  function openBorrow(bookId,title){pendingBorrowId=bookId;document.getElementById('borrowBookName').textContent='📚 "'+title+'"';document.getElementById('borrow-name').value=BINGO_USER||'';openOverlay('borrowOverlay');}
+  function openBorrow(bookId,title){
+    if(!requireAuth())return;
+    pendingBorrowId=bookId;document.getElementById('borrowBookName').textContent='📚 "'+title+'"';
+    document.getElementById('borrow-name').value=AUTH.displayName||'';
+    document.getElementById('borrow-name').readOnly=true;
+    openOverlay('borrowOverlay');
+  }
   function submitBorrow(){
+    if(!requireAuth())return;
     var name=document.getElementById('borrow-name').value.trim();
-    if(!name){alert('Please enter your name.');return;}
+    if(!name){alert('Please sign in again.');return;}
     var btn=document.getElementById('borrowBtn');btn.textContent='Updating...';btn.disabled=true;
     apiCall({action:'borrowLibraryBook',bookId:pendingBorrowId,borrowedBy:name,date:today()})
       .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('borrowOverlay');showToast('Enjoy your read! Return it when done 📖');return refreshAll();})
@@ -929,10 +1166,17 @@
       .finally(function(){btn.textContent='I\'m Reading This 📖';btn.disabled=false;});
   }
 
-  function openReturn(bookId,title){pendingReturnId=bookId;document.getElementById('returnBookName').textContent='📚 "'+title+'"';document.getElementById('return-name').value=BINGO_USER||'';openOverlay('returnOverlay');}
+  function openReturn(bookId,title){
+    if(!requireAuth())return;
+    pendingReturnId=bookId;document.getElementById('returnBookName').textContent='📚 "'+title+'"';
+    document.getElementById('return-name').value=AUTH.displayName||'';
+    document.getElementById('return-name').readOnly=true;
+    openOverlay('returnOverlay');
+  }
   function submitReturn_lib(){
+    if(!requireAuth())return;
     var name=document.getElementById('return-name').value.trim();
-    if(!name){alert('Please enter your name.');return;}
+    if(!name){alert('Please sign in again.');return;}
     var btn=document.getElementById('returnBtn');btn.textContent='Returning...';btn.disabled=true;
     apiCall({action:'returnLibraryBook',bookId:pendingReturnId,date:today()})
       .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('returnOverlay');showToast('Book returned! Don\'t forget to post your recommendation 📝');return refreshAll();})
@@ -940,25 +1184,7 @@
       .finally(function(){btn.textContent='Confirm Return ✅';btn.disabled=false;});
   }
 
-  // ── BINGO — FULLY SERVER-BACKED ────────────────────────────────────────
-  function setBingoName(){
-    var name=document.getElementById('bingoNameInput').value.trim();
-    if(!name){alert('Please enter your name.');return;}
-    BINGO_USER=name;
-    LS.set('bb_user',{name:name});
-    document.getElementById('bingoNameBox').style.display='none';
-    document.getElementById('bingoNameDisplay').style.display='flex';
-    document.getElementById('bingoNameLabel').textContent=name;
-    loadBingoForUser(name);
-  }
-  function changeBingoName(){
-    BINGO_USER='';BINGO_LINKS=[];
-    document.getElementById('bingoNameDisplay').style.display='none';
-    document.getElementById('bingoArea').style.display='none';
-    document.getElementById('bingoLoading').style.display='none';
-    document.getElementById('bingoNameBox').style.display='flex';
-    document.getElementById('bingoNameInput').value='';
-  }
+  // ── BINGO — FULLY SERVER-BACKED (requires sign-in) ─────────────────────
   function loadBingoForUser(name){
     document.getElementById('bingoLoading').style.display='block';
     document.getElementById('bingoArea').style.display='none';
@@ -1017,7 +1243,8 @@
   }
 
   function clickBingoSquare(idx){
-    if(!BINGO_USER){alert('Please set your name first.');return;}
+    if(!requireAuth())return;
+    if(!BINGO_USER){showToast('Sign in to use your bingo card.','error');return;}
     // Already linked?
     var existing=BINGO_LINKS.find(function(l){return Number(l.squareIndex)===idx;});
     if(existing){showToast('This square is already linked to "'+existing.bookTitle+'"');return;}
@@ -1055,6 +1282,7 @@
   }
 
   function submitBingoLink(){
+    if(!requireAuth())return;
     if(!selectedLinkBookId||pendingSquareIndex===null)return;
     var book=BOOKS.find(function(b){return String(b.id)===String(selectedLinkBookId);});
     if(!book)return;
@@ -1085,20 +1313,23 @@
 
   // ── CLAIM BINGO ────────────────────────────────────────────────────────
   function openClaim(type,lines){
+    if(!requireAuth())return;
     pendingClaimType=type;pendingClaimLines=lines;
     var isFull=type==='fullcard';
     var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
     var unclaimedLines=isFull?0:(lines-(claimed.lines||0));
     document.getElementById('claimModalTitle').textContent=isFull?'🏆 Claim Bingo Master!':'🎯 Claim Line Bonus!';
     document.getElementById('claimModalDesc').textContent=isFull
-      ?'You completed the full bingo card! Enter your name to confirm and claim +20 pts + 🎴 Bingo Master badge.'
+      ?'You completed the full bingo card! Confirm to claim +20 pts + 🎴 Bingo Master badge.'
       :'You completed '+(unclaimedLines>1?unclaimedLines+' lines':'a line')+'! Claim +'+(unclaimedLines*5)+' pts.';
-    document.getElementById('claim-name').value=BINGO_USER||'';
+    document.getElementById('claim-name').value=BINGO_USER||AUTH.displayName||'';
+    document.getElementById('claim-name').readOnly=true;
     openOverlay('claimOverlay');
   }
   function submitClaim(){
+    if(!requireAuth())return;
     var name=document.getElementById('claim-name').value.trim();
-    if(!name){alert('Please enter your name.');return;}
+    if(!name){showToast('Please sign in again.','error');return;}
     var btn=document.getElementById('claimBtn');btn.textContent='Claiming...';btn.disabled=true;
     var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
     var unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-(claimed.lines||0));
@@ -1151,12 +1382,12 @@
   function overlayClose(e,id){if(e.target===document.getElementById(id))closeOverlay(id);}
 
   // ── INIT ───────────────────────────────────────────────────────────────
-  // Restore saved username
-  var savedUser=LS.get('bb_user');
-  if(savedUser&&savedUser.name){
-    document.getElementById('bingoNameInput').value=savedUser.name;
-  }
-  refreshAll();
+  loadAuthFromStorage();
+  pingSession().then(function(){
+    updateAuthUI();
+    updateBingoAuthPanel();
+    return refreshAll();
+  });
 </script>
 </body>
 </html>
