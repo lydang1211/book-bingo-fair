@@ -604,7 +604,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  var API='https://script.google.com/macros/s/AKfycbyCye97QRGke46bJVZ4untXJ4nzK0XN6iw-xWFPZVPNWppdSmgL8gB64jDF5guJTW7DZA/exec';
+  var API='https://script.google.com/macros/s/AKfycbx3LqyCtq_JPOuLd_f2T4bJJ7fiPhlxtXxuD9V5x9sLpXO94zDd7NpMGfEiehwuKceHDg/exec';
 
   var CATEGORIES=[
     "A book under 150 pages","A book by an Asian author","A book that changed how you think",
@@ -639,28 +639,6 @@
     Object.keys(merged).forEach(function(k){url.searchParams.append(k,String(merged[k]));});
     return fetch(url.toString(),{redirect:'follow'})
       .then(function(r){return r.text();})
-      .then(function(t){
-        var data;
-        try{data=JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}
-        if(data&&String(data.error)==='Unauthorized'){
-          clearAuthSession();updateAuthUI();updateBingoAuthPanel();
-          showToast('Session expired. Please sign in again.','error');
-        }
-        return data;
-      });
-  }
-
-  // ── API (POST) — for large payloads like full reviews ─────────────────
-  function apiPost(params){
-    var merged={};
-    Object.keys(params).forEach(function(k){merged[k]=params[k];});
-    if(AUTH&&AUTH.sessionToken)merged.sessionToken=AUTH.sessionToken;
-    return fetch(API,{
-      method:'POST',
-      redirect:'follow',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(merged)
-    }).then(function(r){return r.text();})
       .then(function(t){
         var data;
         try{data=JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}
@@ -999,11 +977,11 @@
     if(full!==''&&full.split(/\s+/).length>2000){alert('Full review exceeds 2000 words.');return;}
     var btn=document.getElementById('addBookBtn'),isEdit=!!editingBookId;
     btn.textContent=isEdit?'Saving...':'Posting...';btn.disabled=true;
-    // Use POST to avoid URL length limits for long full reviews
+    // GET via query string — works from GitHub Pages (cross-origin POST hits CORS / missing doPost)
     var params=isEdit
       ?{action:'editBook',bookId:editingBookId,title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||''}
       :{action:'addBook',title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||'',date:today()};
-    apiPost(params).then(function(res){
+    apiCall(params).then(function(res){
       if(res&&res.error)throw new Error(res.error);
       ['f-title','f-author','f-review','f-fullreview','f-cover'].forEach(function(id){document.getElementById(id).value='';});
       document.getElementById('f-category').selectedIndex=0;

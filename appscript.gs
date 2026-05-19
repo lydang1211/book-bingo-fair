@@ -167,6 +167,20 @@ function requireSession(p){
   return s;
 }
 
+function doPost(e){
+  var p={};
+  if(e.parameter){
+    Object.keys(e.parameter).forEach(function(k){p[k]=e.parameter[k];});
+  }
+  if(e.postData&&e.postData.contents){
+    try{
+      var body=JSON.parse(e.postData.contents);
+      Object.keys(body).forEach(function(k){p[k]=body[k];});
+    }catch(err){}
+  }
+  return doGet({parameter:p});
+}
+
 function doGet(e){
   var p=e.parameter;
   try{
