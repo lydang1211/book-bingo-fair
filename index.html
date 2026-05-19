@@ -650,27 +650,7 @@
       });
   }
 
-  // ── API (POST) — for large payloads like full reviews ─────────────────
-  function apiPost(params){
-    var merged={};
-    Object.keys(params).forEach(function(k){merged[k]=params[k];});
-    if(AUTH&&AUTH.sessionToken)merged.sessionToken=AUTH.sessionToken;
-    return fetch(API,{
-      method:'POST',
-      redirect:'follow',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(merged)
-    }).then(function(r){return r.text();})
-      .then(function(t){
-        var data;
-        try{data=JSON.parse(t);}catch(e){throw new Error('Parse error: '+t.substring(0,80));}
-        if(data&&String(data.error)==='Unauthorized'){
-          clearAuthSession();updateAuthUI();updateBingoAuthPanel();
-          showToast('Session expired. Please sign in again.','error');
-        }
-        return data;
-      });
-  }
+
 
   var LS={
     get:function(k){try{return JSON.parse(localStorage.getItem(k)||'{}');}catch(e){return{};}},
@@ -1003,7 +983,7 @@
     var params=isEdit
       ?{action:'editBook',bookId:editingBookId,title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||''}
       :{action:'addBook',title:title,author:author,category:cat,recommender:name,microReview:review,fullReview:full,coverUrl:cover||'',date:today()};
-    apiPost(params).then(function(res){
+    apiCall(params).then(function(res){
       if(res&&res.error)throw new Error(res.error);
       ['f-title','f-author','f-review','f-fullreview','f-cover'].forEach(function(id){document.getElementById(id).value='';});
       document.getElementById('f-category').selectedIndex=0;
