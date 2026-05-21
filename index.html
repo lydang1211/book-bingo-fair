@@ -568,9 +568,9 @@
 </div>
 
 <!-- ── LOGIN MODAL ── -->
-<div class="overlay" id="loginOverlay" onclick="overlayClose(event,'loginOverlay')">
+<div class="overlay" id="loginOverlay" onclick="loginOverlayBackdropClick(event)">
   <div class="modal" style="max-width:420px">
-    <div class="m-header"><h2>🔐 Sign In</h2><button class="m-close-x" onclick="closeOverlay('loginOverlay')">✕</button></div>
+    <div class="m-header"><h2>🔐 Sign In</h2><button type="button" class="m-close-x" onclick="closeLoginModal()">✕</button></div>
     <div class="m-body">
       <div id="loginStep1">
         <p style="font-size:14px;color:var(--text-2);margin-bottom:18px;line-height:1.6">Enter your <strong>@amanotes.com</strong> email. We'll send you a one-time code to sign in.</p>
@@ -578,10 +578,11 @@
         <button class="btn-primary btn-full" id="loginSendBtn" onclick="sendLoginCode()">Send code</button>
       </div>
       <div id="loginStep2" style="display:none">
-        <p style="font-size:14px;color:var(--text-2);margin-bottom:18px;line-height:1.6">Enter the 6-digit code sent to your email.</p>
+        <p id="loginEmailHint" style="font-size:14px;color:var(--text-2);margin-bottom:18px;line-height:1.6"></p>
         <div class="form-g"><label>One-time Code *</label><input type="text" id="loginCode" placeholder="123456" maxlength="6" style="letter-spacing:0.2em;font-size:20px;text-align:center"/></div>
         <div class="form-g"><label>Display Name <span class="opt">(how your name appears)</span></label><input type="text" id="loginDisplayName" placeholder="e.g. Ly Dang"/></div>
         <button class="btn-primary btn-full" id="loginVerifyBtn" onclick="verifyLoginCode()">Verify & sign in</button>
+        <button type="button" class="btn-secondary btn-full" id="loginResendBtn" onclick="resendLoginCode()" style="margin-top:10px">Resend code</button>
         <p class="login-hint"><button type="button" class="m-close-x" onclick="loginBackToEmail()" style="margin:0;font-size:13px;color:var(--accent)">← Use a different email</button></p>
       </div>
       <p class="login-hint" id="loginErr" style="color:#c0392b;display:none"></p>
@@ -629,6 +630,11 @@
   var pendingSquareIndex=null, selectedLinkBookId=null;
   var libFilter='all', libSearch='', libCatFilter='';
   var pendingLoginEmail='';
+  var loginCodeSentAt=0;
+  var loginResendTimer=null;
+  var LOGIN_OTP_TTL_MS=10*60*1000;
+  var LOGIN_RESEND_COOLDOWN_MS=60*1000;
+  var SS_LOGIN_PENDING='bb_login_pending';
 
   // ── API (GET) ──────────────────────────────────────────────────────────
   function apiCall(params){
@@ -720,44 +726,181 @@
   }
   function logout(){
     if(AUTH&&AUTH.sessionToken)apiCall({action:'invalidateSession'}).catch(function(){});
+    clearPendingLogin();
     clearAuthSession();updateAuthUI();updateBingoAuthPanel();renderBooks();
     showToast('Signed out.');
   }
+  function loadPendingLoginFromStorage(){
+    try{
+      var raw=sessionStorage.getItem(SS_LOGIN_PENDING);
+      if(!raw)return;
+      var o=JSON.parse(raw);
+      if(!o||!o.email)return;
+      if(o.codeSentAt&&Date.now()-o.codeSentAt>LOGIN_OTP_TTL_MS){
+        sessionStorage.removeItem(SS_LOGIN_PENDING);
+        return;
+      }
+      pendingLoginEmail=o.email;
+      loginCodeSentAt=o.codeSentAt||0;
+    }catch(e){}
+  }
+  function savePendingLogin(email,codeSentAt){
+    pendingLoginEmail=email;
+    loginCodeSentAt=codeSentAt||Date.now();
+    try{
+      sessionStorage.setItem(SS_LOGIN_PENDING,JSON.stringify({email:email,codeSentAt:loginCodeSentAt}));
+    }catch(e){}
+  }
+  function clearPendingLogin(){
+    pendingLoginEmail='';
+    loginCodeSentAt=0;
+    try{sessionStorage.removeItem(SS_LOGIN_PENDING);}catch(e){}
+    stopLoginResendCountdown();
+  }
+  function isLoginOtpExpired(){
+    return loginCodeSentAt>0&&Date.now()-loginCodeSentAt>LOGIN_OTP_TTL_MS;
+  }
+  function isLoginStep2Visible(){
+    return document.getElementById('loginStep2').style.display!=='none';
+  }
+  function updateLoginEmailHint(){
+    var el=document.getElementById('loginEmailHint');
+    if(!el)return;
+    if(pendingLoginEmail){
+      el.innerHTML='Enter the 6-digit code sent to <strong>'+esc(pendingLoginEmail)+'</strong>. The code expires in 10 minutes.';
+    }else{
+      el.textContent='Enter the 6-digit code sent to your email.';
+    }
+  }
+  function stopLoginResendCountdown(){
+    if(loginResendTimer){clearInterval(loginResendTimer);loginResendTimer=null;}
+  }
+  function startLoginResendCountdown(){
+    stopLoginResendCountdown();
+    var btn=document.getElementById('loginResendBtn');
+    if(!btn)return;
+    function tick(){
+      var left=LOGIN_RESEND_COOLDOWN_MS-(Date.now()-(loginCodeSentAt||0));
+      if(left<=0){
+        btn.disabled=false;
+        btn.textContent='Resend code';
+        stopLoginResendCountdown();
+        return;
+      }
+      btn.disabled=true;
+      btn.textContent='Resend in '+Math.ceil(left/1000)+'s…';
+    }
+    tick();
+    loginResendTimer=setInterval(tick,1000);
+  }
+  function showLoginStep(step){
+    var s1=document.getElementById('loginStep1');
+    var s2=document.getElementById('loginStep2');
+    if(step===2){
+      s1.style.display='none';
+      s2.style.display='block';
+      document.getElementById('loginEmail').value=pendingLoginEmail||'';
+      updateLoginEmailHint();
+      startLoginResendCountdown();
+      setTimeout(function(){var c=document.getElementById('loginCode');if(c)c.focus();},50);
+    }else{
+      s1.style.display='block';
+      s2.style.display='none';
+      stopLoginResendCountdown();
+      var rb=document.getElementById('loginResendBtn');
+      if(rb){rb.disabled=false;rb.textContent='Resend code';}
+    }
+  }
+  function loginOverlayBackdropClick(e){
+    if(e.target!==document.getElementById('loginOverlay'))return;
+    if(isLoginStep2Visible())return;
+    closeOverlay('loginOverlay');
+  }
+  function closeLoginModal(){
+    if(isLoginStep2Visible()){
+      var ok=confirm('You are waiting for a verification code. Closing will not cancel the code — open Sign in again to enter it. Close this window?');
+      if(!ok)return;
+    }
+    closeOverlay('loginOverlay');
+  }
   function openLoginModal(){
+    loadPendingLoginFromStorage();
     document.getElementById('loginErr').style.display='none';
-    document.getElementById('loginStep1').style.display='block';
-    document.getElementById('loginStep2').style.display='none';
-    document.getElementById('loginEmail').value=pendingLoginEmail||'';
     document.getElementById('loginCode').value='';
-    document.getElementById('loginDisplayName').value='';
+    if(pendingLoginEmail&&isLoginOtpExpired()){
+      clearPendingLogin();
+      showToast('Your code has expired. Please request a new one.','error');
+    }
+    if(pendingLoginEmail){
+      document.getElementById('loginEmail').value=pendingLoginEmail;
+      var lp=pendingLoginEmail.split('@')[0]||'';
+      if(!document.getElementById('loginDisplayName').value){
+        document.getElementById('loginDisplayName').value=lp.replace(/[._]/g,' ');
+      }
+      showLoginStep(2);
+    }else{
+      document.getElementById('loginEmail').value='';
+      document.getElementById('loginDisplayName').value='';
+      showLoginStep(1);
+    }
     openOverlay('loginOverlay');
   }
   function loginBackToEmail(){
-    document.getElementById('loginStep1').style.display='block';
-    document.getElementById('loginStep2').style.display='none';
+    clearPendingLogin();
     document.getElementById('loginErr').style.display='none';
+    document.getElementById('loginCode').value='';
+    showLoginStep(1);
   }
-  function sendLoginCode(){
-    var em=document.getElementById('loginEmail').value.trim().toLowerCase();
-    var btn=document.getElementById('loginSendBtn');
+  function resendLoginCode(){
+    if(!pendingLoginEmail){loginBackToEmail();return;}
+    sendLoginCode(true);
+  }
+  function sendLoginCode(isResend){
+    var onOtpStep=isLoginStep2Visible()||isResend;
+    var em=(onOtpStep&&pendingLoginEmail)?pendingLoginEmail:document.getElementById('loginEmail').value.trim().toLowerCase();
+    var sendBtn=document.getElementById('loginSendBtn');
+    var resendBtn=document.getElementById('loginResendBtn');
+    var btn=onOtpStep?resendBtn:sendBtn;
     if(!em){showToast('Enter your work email.','error');return;}
-    btn.disabled=true;btn.textContent='Sending…';
+    if(onOtpStep&&loginCodeSentAt&&Date.now()-loginCodeSentAt<LOGIN_RESEND_COOLDOWN_MS){
+      startLoginResendCountdown();
+      return;
+    }
+    btn.disabled=true;
+    var prevLabel=btn.textContent;
+    btn.textContent='Sending…';
     document.getElementById('loginErr').style.display='none';
     apiCall({action:'requestLoginCode',email:em})
       .then(function(res){
         if(res&&res.error)throw new Error(res.error);
-        pendingLoginEmail=em;
-        document.getElementById('loginStep1').style.display='none';
-        document.getElementById('loginStep2').style.display='block';
-        var lp=em.split('@')[0]||'';
-        document.getElementById('loginDisplayName').value=lp.replace(/[._]/g,' ');
-        showToast('Check your inbox for the code.');
+        savePendingLogin(em,Date.now());
+        if(!onOtpStep||!document.getElementById('loginDisplayName').value.trim()){
+          var lp=em.split('@')[0]||'';
+          document.getElementById('loginDisplayName').value=lp.replace(/[._]/g,' ');
+        }
+        showLoginStep(2);
+        showToast(isResend?'A new code was sent to your inbox.':'Check your inbox for the code.');
       }).catch(function(e){
-        document.getElementById('loginErr').textContent=e.message||String(e);
+        var msg=e.message||String(e);
+        document.getElementById('loginErr').textContent=msg;
         document.getElementById('loginErr').style.display='block';
-      }).finally(function(){btn.disabled=false;btn.textContent='Send code';});
+        if(/wait a minute/i.test(msg))startLoginResendCountdown();
+      }).finally(function(){
+        if(onOtpStep){
+          startLoginResendCountdown();
+        }else{
+          sendBtn.disabled=false;
+          sendBtn.textContent='Send code';
+        }
+      });
   }
   function verifyLoginCode(){
+    if(pendingLoginEmail&&isLoginOtpExpired()){
+      clearPendingLogin();
+      showLoginStep(1);
+      showToast('Your code has expired. Please request a new one.','error');
+      return;
+    }
     var code=document.getElementById('loginCode').value.trim().replace(/\s/g,'');
     var dn=document.getElementById('loginDisplayName').value.trim();
     var btn=document.getElementById('loginVerifyBtn');
@@ -770,6 +913,7 @@
       if(res&&res.error)throw new Error(res.error);
       if(!res||!res.sessionToken)throw new Error('Invalid response');
       saveAuthSession({sessionToken:res.sessionToken,email:res.email||pendingLoginEmail,displayName:res.displayName||dn});
+      clearPendingLogin();
       closeOverlay('loginOverlay');updateAuthUI();updateBingoAuthPanel();renderBooks();
       showToast('Welcome, '+(AUTH.displayName||AUTH.email)+'!');
       return refreshAll();
@@ -1292,6 +1436,7 @@
 
   // ── INIT ───────────────────────────────────────────────────────────────
   loadAuthFromStorage();
+  loadPendingLoginFromStorage();
   pingSession().then(function(){
     updateAuthUI();
     updateBingoAuthPanel();
