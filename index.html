@@ -994,35 +994,43 @@
 
   function toggleLike(bookId){
     if(!requireAuth())return;
+    var btn=document.getElementById('l-'+bookId);
+    if(btn&&btn.disabled)return;          // already processing → skip
+    if(btn)btn.disabled=true;            // lock while in-flight
     var likes=LS.get('bb_likes'),book=BOOKS.find(function(b){return String(b.id)===String(bookId);});
-    if(!book)return;
+    if(!book){if(btn)btn.disabled=false;return;}
     var delta=likes[bookId]?-1:1;
     apiCall({action:'like',bookId:bookId,delta:delta}).then(function(res){
       if(res&&res.error){showToast(res.error,'error');return;}
       if(delta===1){likes[bookId]=true;book.likes=(book.likes||0)+1;}else{delete likes[bookId];book.likes=Math.max(0,(book.likes||0)-1);}
       LS.set('bb_likes',likes);
-      var btn=document.getElementById('l-'+bookId),cnt=document.getElementById('lc-'+bookId);
       if(btn)btn.className='act-btn '+(likes[bookId]?'liked':'');
+      var cnt=document.getElementById('lc-'+bookId);
       if(cnt)cnt.textContent=book.likes;
       if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
       renderLeaderboard();
-    }).catch(function(e){showToast('Could not update like: '+e.message,'error');});
+    }).catch(function(e){showToast('Could not update like: '+e.message,'error');})
+    .finally(function(){if(btn)btn.disabled=false;});   // always unlock
   }
 
   function toggleBorrow(bookId){
     if(!requireAuth())return;
+    var btn=document.getElementById('br-'+bookId);
+    if(btn&&btn.disabled)return;
+    if(btn)btn.disabled=true;
     var borrows=LS.get('bb_borrows'),book=BOOKS.find(function(b){return String(b.id)===String(bookId);});
-    if(!book)return;
+    if(!book){if(btn)btn.disabled=false;return;}
     var delta=borrows[bookId]?-1:1;
     apiCall({action:'borrow',bookId:bookId,delta:delta}).then(function(res){
       if(res&&res.error){showToast(res.error,'error');return;}
       if(delta===1){borrows[bookId]=true;book.wantToBorrow=(book.wantToBorrow||0)+1;}else{delete borrows[bookId];book.wantToBorrow=Math.max(0,(book.wantToBorrow||0)-1);}
       LS.set('bb_borrows',borrows);
-      var btn=document.getElementById('br-'+bookId),cnt=document.getElementById('bc-'+bookId);
       if(btn)btn.className='act-btn '+(borrows[bookId]?'borrowed':'');
+      var cnt=document.getElementById('bc-'+bookId);
       if(cnt)cnt.textContent=book.wantToBorrow;
       if(String(currentBookId)===String(bookId)&&document.getElementById('bookOverlay').classList.contains('open'))renderBookModal(bookId);
-    }).catch(function(e){showToast('Could not update borrow: '+e.message,'error');});
+    }).catch(function(e){showToast('Could not update borrow: '+e.message,'error');})
+    .finally(function(){if(btn)btn.disabled=false;});
   }
 
   // ── BOOK MODAL ─────────────────────────────────────────────────────────
@@ -1286,13 +1294,31 @@
       var isWild=cat.startsWith('⭐'),isDone=!!link;
       var cls='bingo-cell'+(isDone?' done':'')+(isWild&&!isDone?' wild':'');
       var bookSnippet=isDone?'<div class="bingo-cell-book">'+esc(link.bookTitle)+'</div>':'';
-      return '<div class="'+cls+'" onclick="clickBingoSquare('+i+')">'+
-        '<div class="bingo-cell-cat">'+esc(cat)+'</div>'+bookSnippet+'</div>';
+      return '<div class="'+cls+'" onclick="clickBingoSquare('+i+')">'+'<div class="bingo-cell-cat">'+esc(cat)+'</div>'+bookSnippet+'</div>';
     }).join('');
     document.getElementById('bingoProgress').innerHTML=
       '<strong>'+linked+'/16</strong> squares linked · <strong>'+lines+'</strong> line'+(lines!==1?'s':'')+' completed'+(lines>0?' 🎉':'');
+
+    // --- FIX: pull ground truth from server (BINGO_BONUSES) ---
+    var serverClaimedLines=0,serverClaimedFull=false;
+    BINGO_BONUSES.forEach(function(b){
+      if(String(b.name||'').toLowerCase()===String(BINGO_USER||'').toLowerCase()){
+        if(b.type==='fullcard')serverClaimedFull=true;
+        if(b.type==='line'&&Number(b.lines||0)>serverClaimedLines)serverClaimedLines=Number(b.lines||0);
+      }
+    });
     var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
-    var claimedLines=claimed.lines||0,claimedFull=!!claimed.fullcard;
+    // If server knows more than localStorage → sync localStorage
+    if(serverClaimedLines>(claimed.lines||0)||serverClaimedFull){
+      if(serverClaimedLines>(claimed.lines||0))claimed.lines=serverClaimedLines;
+      if(serverClaimedFull)claimed.fullcard=true;
+      LS.set('bb_bingo_claimed_'+BINGO_USER,claimed);
+    }
+    // Use the authoritative (max) claimed state
+    var claimedLines=Math.max(claimed.lines||0,serverClaimedLines);
+    var claimedFull=(!!claimed.fullcard)||serverClaimedFull;
+    // --- end FIX ---
+
     var unclaimedLines=lines-claimedLines;
     var cl=document.getElementById('bingoClaim');
     if(linked===16&&!claimedFull){
@@ -1383,9 +1409,33 @@
     if(!requireAuth())return;
     var name=document.getElementById('claim-name').value.trim();
     if(!name){showToast('Please sign in again.','error');return;}
-    var btn=document.getElementById('claimBtn');btn.textContent='Claiming...';btn.disabled=true;
+    var btn=document.getElementById('claimBtn');btn.textContent='Claiming…';btn.disabled=true;
+
+    // --- FIX: re-check server state before allowing claim ---
+    var serverClaimedLines=0,serverClaimedFull=false;
+    BINGO_BONUSES.forEach(function(b){
+      if(String(b.name||'').toLowerCase()===String(BINGO_USER||'').toLowerCase()){
+        if(b.type==='fullcard')serverClaimedFull=true;
+        if(b.type==='line'&&Number(b.lines||0)>serverClaimedLines)serverClaimedLines=Number(b.lines||0);
+      }
+    });
     var claimed=LS.get('bb_bingo_claimed_'+BINGO_USER)||{};
-    var unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-(claimed.lines||0));
+    var effectiveClaimedLines=Math.max(claimed.lines||0,serverClaimedLines);
+    var effectiveClaimedFull=(!!claimed.fullcard)||serverClaimedFull;
+
+    if(pendingClaimType==='fullcard'&&effectiveClaimedFull){
+      showToast('Full card bonus already claimed!','error');
+      btn.textContent='Claim My Bonus 🎉';btn.disabled=false;
+      closeOverlay('claimOverlay');renderBingo();return;
+    }
+    if(pendingClaimType==='line'&&pendingClaimLines<=effectiveClaimedLines){
+      showToast('Line bonus already claimed!','error');
+      btn.textContent='Claim My Bonus 🎉';btn.disabled=false;
+      closeOverlay('claimOverlay');renderBingo();return;
+    }
+    // --- end FIX ---
+
+    var unclaimedLines=pendingClaimType==='fullcard'?0:(pendingClaimLines-effectiveClaimedLines);
     var pts=pendingClaimType==='fullcard'?20:unclaimedLines*5;
     apiCall({action:'claimBingo',name:name,type:pendingClaimType,lines:pendingClaimLines,pts:pts,date:today()})
       .then(function(res){
