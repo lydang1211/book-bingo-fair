@@ -1492,6 +1492,98 @@
     updateBingoAuthPanel();
     return refreshAll();
   });
+// ══════════════════════════════════════════════════════════════════════════
+// BUG FIX #3 — Library "I'm Reading This" không update
+// Root cause: submitBorrow() thiếu local LIBRARY state update + renderLibrary()
+//             openBorrowModal() có thể không set currentLibBookId đúng
+// Fix: Override 4 functions bên dưới (JS dùng definition cuối cùng)
+// ══════════════════════════════════════════════════════════════════════════
+
+var currentLibBookId = null; // đảm bảo biến này luôn tồn tại
+
+function openBorrowModal(bookId) {
+  if (!requireAuth()) return;
+  currentLibBookId = bookId;
+  var b = LIBRARY.find(function(x) { return String(x.id) === String(bookId); });
+  if (!b) return;
+  document.getElementById('borrowBookName').textContent = '\u201c' + b.title + '\u201d by ' + b.author;
+  document.getElementById('borrow-name').value = AUTH.displayName || '';
+  openOverlay('borrowOverlay');
+}
+
+function submitBorrow() {
+  if (!requireAuth()) return;
+  var name = document.getElementById('borrow-name').value.trim();
+  if (!name) { showToast('Please sign in to borrow.', 'error'); return; }
+  var btn = document.getElementById('borrowBtn');
+  if (btn && btn.disabled) return;          // chống double-click
+  if (btn) { btn.disabled = true; btn.textContent = 'Borrowing\u2026'; }
+  apiCall({ action: 'borrowLib', bookId: currentLibBookId, name: name })
+    .then(function(res) {
+      if (res && res.error) throw new Error(res.error);
+      // ── FIX: cập nhật local LIBRARY array ──────────────────────────────
+      var book = LIBRARY.find(function(b) {
+        return String(b.id) === String(currentLibBookId);
+      });
+      if (book) {
+        book.status   = 'borrowed';
+        book.borrowedBy = name;
+      }
+      // ── FIX: re-render library ngay lập tức ────────────────────────────
+      closeOverlay('borrowOverlay');
+      renderLibrary();
+      showToast('Happy reading! \uD83D\uDCD6 Come back and Return when done.');
+    })
+    .catch(function(e) {
+      showToast('Could not borrow: ' + e.message, 'error');
+    })
+    .finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = "I\u2019m Reading This \uD83D\uDCD6"; }
+    });
+}
+
+function openReturnModal(bookId) {
+  if (!requireAuth()) return;
+  currentLibBookId = bookId;
+  var b = LIBRARY.find(function(x) { return String(x.id) === String(bookId); });
+  if (!b) return;
+  document.getElementById('returnBookName').textContent = '\u201c' + b.title + '\u201d by ' + b.author;
+  document.getElementById('return-name').value = AUTH.displayName || '';
+  openOverlay('returnOverlay');
+}
+
+function submitReturn_lib() {
+  if (!requireAuth()) return;
+  var name = document.getElementById('return-name').value.trim();
+  var btn = document.getElementById('returnBtn');
+  if (btn && btn.disabled) return;          // chống double-click
+  if (btn) { btn.disabled = true; btn.textContent = 'Returning\u2026'; }
+  apiCall({ action: 'returnLib', bookId: currentLibBookId, name: name })
+    .then(function(res) {
+      if (res && res.error) throw new Error(res.error);
+      // ── FIX: cập nhật local LIBRARY array ──────────────────────────────
+      var book = LIBRARY.find(function(b) {
+        return String(b.id) === String(currentLibBookId);
+      });
+      if (book) {
+        book.status     = 'available';
+        book.borrowedBy = '';
+      }
+      // ── FIX: re-render library ngay lập tức ────────────────────────────
+      closeOverlay('returnOverlay');
+      renderLibrary();
+      showToast('Book returned! \uD83D\uDE4F Post your recommendation to earn points.');
+    })
+    .catch(function(e) {
+      showToast('Could not return: ' + e.message, 'error');
+    })
+    .finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Confirm Return \u2705'; }
+    });
+}
+// ══════════════════════════════════════════════════════════════════════════
+// END BUG FIX #3
+// ══════════════════════════════════════════════════════════════════════════  
 </script>
 </body>
 </html>
