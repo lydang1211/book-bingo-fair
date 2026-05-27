@@ -1492,21 +1492,14 @@
     updateBingoAuthPanel();
     return refreshAll();
   });
-// ══════════════════════════════════════════════════════════════════════════
-// BUG FIX #3 — Library "I'm Reading This" không update
-// Root cause: submitBorrow() thiếu local LIBRARY state update + renderLibrary()
-//             openBorrowModal() có thể không set currentLibBookId đúng
-// Fix: Override 4 functions bên dưới (JS dùng definition cuối cùng)
-// ══════════════════════════════════════════════════════════════════════════
+// ── BUG #3 FIX v2 — Library "I'm Reading This" / Return ──────────────────
+// Overrides submitBorrow + submitReturn_lib with CONFIRMED correct action names
+// Paste this entire block just before the closing </script> tag
 
-var currentLibBookId = null; // đảm bảo biến này luôn tồn tại
-
-function openBorrowModal(bookId) {
+function openBorrow(bookId, title) {
   if (!requireAuth()) return;
-  currentLibBookId = bookId;
-  var b = LIBRARY.find(function(x) { return String(x.id) === String(bookId); });
-  if (!b) return;
-  document.getElementById('borrowBookName').textContent = '\u201c' + b.title + '\u201d by ' + b.author;
+  pendingBorrowId = bookId;
+  document.getElementById('borrowBookName').textContent = '\u{1F4DA} "' + title + '"';
   document.getElementById('borrow-name').value = AUTH.displayName || '';
   openOverlay('borrowOverlay');
 }
@@ -1514,40 +1507,24 @@ function openBorrowModal(bookId) {
 function submitBorrow() {
   if (!requireAuth()) return;
   var name = document.getElementById('borrow-name').value.trim();
-  if (!name) { showToast('Please sign in to borrow.', 'error'); return; }
+  if (!name) { alert('Please sign in again.'); return; }
   var btn = document.getElementById('borrowBtn');
-  if (btn && btn.disabled) return;          // chống double-click
-  if (btn) { btn.disabled = true; btn.textContent = 'Borrowing\u2026'; }
-  apiCall({ action: 'borrowLib', bookId: currentLibBookId, name: name })
+  btn.textContent = 'Updating...'; btn.disabled = true;
+  apiCall({ action: 'borrowLibraryBook', bookId: pendingBorrowId, borrowedBy: name, date: today() })
     .then(function(res) {
       if (res && res.error) throw new Error(res.error);
-      // ── FIX: cập nhật local LIBRARY array ──────────────────────────────
-      var book = LIBRARY.find(function(b) {
-        return String(b.id) === String(currentLibBookId);
-      });
-      if (book) {
-        book.status   = 'borrowed';
-        book.borrowedBy = name;
-      }
-      // ── FIX: re-render library ngay lập tức ────────────────────────────
       closeOverlay('borrowOverlay');
-      renderLibrary();
-      showToast('Happy reading! \uD83D\uDCD6 Come back and Return when done.');
+      showToast('Enjoy your read! Return it when done \u{1F4D6}');
+      return refreshAll();
     })
-    .catch(function(e) {
-      showToast('Could not borrow: ' + e.message, 'error');
-    })
-    .finally(function() {
-      if (btn) { btn.disabled = false; btn.textContent = "I\u2019m Reading This \uD83D\uDCD6"; }
-    });
+    .catch(function(e) { showToast('Could not borrow: ' + e.message, 'error'); })
+    .finally(function() { btn.textContent = "I'm Reading This \u{1F4D6}"; btn.disabled = false; });
 }
 
-function openReturnModal(bookId) {
+function openReturn(bookId, title) {
   if (!requireAuth()) return;
-  currentLibBookId = bookId;
-  var b = LIBRARY.find(function(x) { return String(x.id) === String(bookId); });
-  if (!b) return;
-  document.getElementById('returnBookName').textContent = '\u201c' + b.title + '\u201d by ' + b.author;
+  pendingReturnId = bookId;
+  document.getElementById('returnBookName').textContent = '\u{1F4DA} "' + title + '"';
   document.getElementById('return-name').value = AUTH.displayName || '';
   openOverlay('returnOverlay');
 }
@@ -1555,35 +1532,20 @@ function openReturnModal(bookId) {
 function submitReturn_lib() {
   if (!requireAuth()) return;
   var name = document.getElementById('return-name').value.trim();
+  if (!name) { alert('Please sign in again.'); return; }
   var btn = document.getElementById('returnBtn');
-  if (btn && btn.disabled) return;          // chống double-click
-  if (btn) { btn.disabled = true; btn.textContent = 'Returning\u2026'; }
-  apiCall({ action: 'returnLib', bookId: currentLibBookId, name: name })
+  btn.textContent = 'Returning...'; btn.disabled = true;
+  apiCall({ action: 'returnLibraryBook', bookId: pendingReturnId, date: today() })
     .then(function(res) {
       if (res && res.error) throw new Error(res.error);
-      // ── FIX: cập nhật local LIBRARY array ──────────────────────────────
-      var book = LIBRARY.find(function(b) {
-        return String(b.id) === String(currentLibBookId);
-      });
-      if (book) {
-        book.status     = 'available';
-        book.borrowedBy = '';
-      }
-      // ── FIX: re-render library ngay lập tức ────────────────────────────
       closeOverlay('returnOverlay');
-      renderLibrary();
-      showToast('Book returned! \uD83D\uDE4F Post your recommendation to earn points.');
+      showToast("Book returned! Don't forget to post your recommendation \u{1F4DD}");
+      return refreshAll();
     })
-    .catch(function(e) {
-      showToast('Could not return: ' + e.message, 'error');
-    })
-    .finally(function() {
-      if (btn) { btn.disabled = false; btn.textContent = 'Confirm Return \u2705'; }
-    });
+    .catch(function(e) { showToast('Could not return: ' + e.message, 'error'); })
+    .finally(function() { btn.textContent = 'Confirm Return \u2705'; btn.disabled = false; });
 }
-// ══════════════════════════════════════════════════════════════════════════
-// END BUG FIX #3
-// ══════════════════════════════════════════════════════════════════════════  
+// ── END BUG #3 FIX v2 ──────────────────────────────────────────────────── 
 </script>
 </body>
 </html>
