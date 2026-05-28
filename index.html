@@ -1493,8 +1493,6 @@
     return refreshAll();
   });
 // ── BUG #3 FIX v2 — Library "I'm Reading This" / Return ──────────────────
-// Overrides submitBorrow + submitReturn_lib with CONFIRMED correct action names
-// Paste this entire block just before the closing </script> tag
 
 function openBorrow(bookId, title) {
   if (!requireAuth()) return;
