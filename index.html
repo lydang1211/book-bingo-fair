@@ -1234,16 +1234,26 @@
     document.getElementById('borrow-name').value=AUTH.displayName||'';
     openOverlay('borrowOverlay');
   }
-  function submitBorrow(){
-    if(!requireAuth())return;
-    var name=document.getElementById('borrow-name').value.trim();
-    if(!name){alert('Please sign in again.');return;}
-    var btn=document.getElementById('borrowBtn');btn.textContent='Updating...';btn.disabled=true;
-    apiCall({action:'borrowLibraryBook',bookId:pendingBorrowId,borrowedBy:name,date:today()})
-      .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('borrowOverlay');showToast('Enjoy your read! Return it when done 📖');return refreshAll();})
-      .catch(function(e){showToast('Could not borrow: '+e.message,'error');})
-      .finally(function(){btn.textContent='I\'m Reading This 📖';btn.disabled=false;});
-  }
+function submitBorrow() {
+  if (!requireAuth()) return;
+  var name = document.getElementById('borrow-name').value.trim();
+  if (!name) { alert('Please sign in again.'); return; }
+  var btn = document.getElementById('borrowBtn');
+  btn.textContent = 'Updating...'; btn.disabled = true;
+  apiCall({ action: 'borrowLibraryBook', bookId: pendingBorrowId, borrowedBy: name, date: today() })
+    .then(function(res) {
+      if (res && res.error) throw new Error(res.error);
+      // ✅ FIX: Optimistic update — reflect change instantly before server sync
+      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(pendingBorrowId); });
+      if (libBook) { libBook.status = 'borrowed'; libBook.borrowedBy = name; }
+      closeOverlay('borrowOverlay');
+      renderLibrary(); // immediate re-render with "Being Read" tag
+      showToast('Enjoy your read! Return it when done 📖');
+      refreshAll(); // background sync — no longer blocking render
+    })
+    .catch(function(e) { showToast('Could not borrow: ' + e.message, 'error'); })
+    .finally(function() { btn.textContent = "I'm Reading This 📖"; btn.disabled = false; });
+}
 
   function openReturn(bookId,title){
     if(!requireAuth())return;
@@ -1252,16 +1262,26 @@
     document.getElementById('return-name').value=AUTH.displayName||'';
     openOverlay('returnOverlay');
   }
-  function submitReturn_lib(){
-    if(!requireAuth())return;
-    var name=document.getElementById('return-name').value.trim();
-    if(!name){alert('Please sign in again.');return;}
-    var btn=document.getElementById('returnBtn');btn.textContent='Returning...';btn.disabled=true;
-    apiCall({action:'returnLibraryBook',bookId:pendingReturnId,date:today()})
-      .then(function(res){if(res&&res.error)throw new Error(res.error);closeOverlay('returnOverlay');showToast('Book returned! Don\'t forget to post your recommendation 📝');return refreshAll();})
-      .catch(function(e){showToast('Could not return: '+e.message,'error');})
-      .finally(function(){btn.textContent='Confirm Return ✅';btn.disabled=false;});
-  }
+function submitReturn_lib() {
+  if (!requireAuth()) return;
+  var name = document.getElementById('return-name').value.trim();
+  if (!name) { alert('Please sign in again.'); return; }
+  var btn = document.getElementById('returnBtn');
+  btn.textContent = 'Returning...'; btn.disabled = true;
+  apiCall({ action: 'returnLibraryBook', bookId: pendingReturnId, date: today() })
+    .then(function(res) {
+      if (res && res.error) throw new Error(res.error);
+      // ✅ FIX: Optimistic update — immediately flip back to Available
+      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(pendingReturnId); });
+      if (libBook) { libBook.status = 'available'; libBook.borrowedBy = ''; }
+      closeOverlay('returnOverlay');
+      renderLibrary(); // immediate re-render with "✅ Available" tag
+      showToast("Book returned! Don't forget to post your recommendation 📝");
+      refreshAll(); // background sync
+    })
+    .catch(function(e) { showToast('Could not return: ' + e.message, 'error'); })
+    .finally(function() { btn.textContent = 'Confirm Return ✅'; btn.disabled = false; });
+}
 
   // ── BINGO — SERVER-BACKED, TIED TO AUTH ────────────────────────────────
   function loadBingoForUser(name){
@@ -1492,58 +1512,6 @@
     updateBingoAuthPanel();
     return refreshAll();
   });
-// ── BUG #3 FIX v2 — Library "I'm Reading This" / Return ──────────────────
-
-function openBorrow(bookId, title) {
-  if (!requireAuth()) return;
-  pendingBorrowId = bookId;
-  document.getElementById('borrowBookName').textContent = '\u{1F4DA} "' + title + '"';
-  document.getElementById('borrow-name').value = AUTH.displayName || '';
-  openOverlay('borrowOverlay');
-}
-
-function submitBorrow() {
-  if (!requireAuth()) return;
-  var name = document.getElementById('borrow-name').value.trim();
-  if (!name) { alert('Please sign in again.'); return; }
-  var btn = document.getElementById('borrowBtn');
-  btn.textContent = 'Updating...'; btn.disabled = true;
-  apiCall({ action: 'borrowLibraryBook', bookId: pendingBorrowId, borrowedBy: name, date: today() })
-    .then(function(res) {
-      if (res && res.error) throw new Error(res.error);
-      closeOverlay('borrowOverlay');
-      showToast('Enjoy your read! Return it when done \u{1F4D6}');
-      return refreshAll();
-    })
-    .catch(function(e) { showToast('Could not borrow: ' + e.message, 'error'); })
-    .finally(function() { btn.textContent = "I'm Reading This \u{1F4D6}"; btn.disabled = false; });
-}
-
-function openReturn(bookId, title) {
-  if (!requireAuth()) return;
-  pendingReturnId = bookId;
-  document.getElementById('returnBookName').textContent = '\u{1F4DA} "' + title + '"';
-  document.getElementById('return-name').value = AUTH.displayName || '';
-  openOverlay('returnOverlay');
-}
-
-function submitReturn_lib() {
-  if (!requireAuth()) return;
-  var name = document.getElementById('return-name').value.trim();
-  if (!name) { alert('Please sign in again.'); return; }
-  var btn = document.getElementById('returnBtn');
-  btn.textContent = 'Returning...'; btn.disabled = true;
-  apiCall({ action: 'returnLibraryBook', bookId: pendingReturnId, date: today() })
-    .then(function(res) {
-      if (res && res.error) throw new Error(res.error);
-      closeOverlay('returnOverlay');
-      showToast("Book returned! Don't forget to post your recommendation \u{1F4DD}");
-      return refreshAll();
-    })
-    .catch(function(e) { showToast('Could not return: ' + e.message, 'error'); })
-    .finally(function() { btn.textContent = 'Confirm Return \u2705'; btn.disabled = false; });
-}
-// ── END BUG #3 FIX v2 ──────────────────────────────────────────────────── 
 </script>
 </body>
 </html>
