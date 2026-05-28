@@ -463,9 +463,9 @@
       <div class="form-g"><label>Your Name *</label><input type="text" id="f-name" placeholder="e.g. Ly Dang" readonly/></div>
       <div class="form-g"><label>Micro-Review * <span class="opt">(1–3 sentences — shown on card)</span></label><textarea id="f-review" placeholder="This book made me ___..."></textarea></div>
       <div class="form-g">
-        <label>Full Review <span class="opt">(optional — up to 2000 words)</span></label>
+        <label>Full Review <span class="opt">(optional — up to 500 words)</span></label>
         <textarea id="f-fullreview" class="tall" placeholder="Share your full thoughts here..." oninput="updateWordCount(this,'f-wc')"></textarea>
-        <div class="word-count" id="f-wc">0 / 2000 words</div>
+        <div class="word-count" id="f-wc">0 / 500 words</div>
       </div>
       <div class="form-g">
         <label>Book Cover URL <span class="opt">(optional)</span></label>
@@ -938,7 +938,7 @@
   function updateWordCount(el,countId){
     var w=el.value.trim()===''?0:el.value.trim().split(/\s+/).length;
     var el2=document.getElementById(countId);
-    el2.textContent=w+' / 2000 words';el2.className='word-count'+(w>2000?' over':'');
+    el2.textContent=w+' / 500 words';el2.className='word-count'+(w>2000?' over':'');
   }
   function previewCover(imgId,wrapId,url){
     var wrap=document.getElementById(wrapId),img=document.getElementById(imgId);
@@ -1095,7 +1095,7 @@
     ['f-title','f-author','f-review','f-fullreview','f-cover'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('f-category').selectedIndex=0;
     document.getElementById('f-cover-preview').style.display='none';
-    document.getElementById('f-wc').textContent='0 / 2000 words';
+    document.getElementById('f-wc').textContent='0 / 500 words';
     document.getElementById('f-name').value=AUTH.displayName||'';
     openOverlay('addOverlay');
   }
@@ -1126,7 +1126,7 @@
     var review=document.getElementById('f-review').value.trim(),full=document.getElementById('f-fullreview').value.trim();
     var cover=document.getElementById('f-cover').value.trim();
     if(!title||!author||!cat||!name||!review){alert('Please fill in all required fields.');return;}
-    if(full!==''&&full.split(/\s+/).length>2000){alert('Full review exceeds 2000 words.');return;}
+    if(full!==''&&full.split(/\s+/).length>2000){alert('Full review exceeds 500 words.');return;}
     var btn=document.getElementById('addBookBtn'),isEdit=!!editingBookId;
     btn.textContent=isEdit?'Saving...':'Posting...';btn.disabled=true;
     // GET via query string — works from GitHub Pages (cross-origin POST hits CORS / missing doPost)
@@ -1138,7 +1138,7 @@
       ['f-title','f-author','f-review','f-fullreview','f-cover'].forEach(function(id){document.getElementById(id).value='';});
       document.getElementById('f-category').selectedIndex=0;
       document.getElementById('f-cover-preview').style.display='none';
-      document.getElementById('f-wc').textContent='0 / 2000 words';
+      document.getElementById('f-wc').textContent='0 / 500 words';
       editingBookId=null;closeOverlay('addOverlay');
       showToast(isEdit?'Post updated! ✓':'Book added! +2 pts 📚');
       return refreshAll();
