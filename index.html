@@ -1243,13 +1243,25 @@ function submitBorrow() {
   apiCall({ action: 'borrowLibraryBook', bookId: pendingBorrowId, borrowedBy: name, date: today() })
     .then(function(res) {
       if (res && res.error) throw new Error(res.error);
-      // ✅ FIX: Optimistic update — reflect change instantly before server sync
-      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(pendingBorrowId); });
-      if (libBook) { libBook.status = 'borrowed'; libBook.borrowedBy = name; }
+      var capturedId = pendingBorrowId;   // capture trước khi async
+      var capturedName = name;
+
+      // Optimistic update — hiện "Being Read" ngay lập tức
+      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(capturedId); });
+      if (libBook) { libBook.status = 'borrowed'; libBook.borrowedBy = capturedName; }
       closeOverlay('borrowOverlay');
-      renderLibrary(); // immediate re-render with "Being Read" tag
+      renderLibrary();
       showToast('Enjoy your read! Return it when done 📖');
-      refreshAll(); // background sync — no longer blocking render
+
+      // Sync server — sau khi xong, re-apply nếu server vẫn trả stale data
+      refreshAll().then(function() {
+        var fresh = LIBRARY.find(function(b) { return String(b.id) === String(capturedId); });
+        if (fresh && String(fresh.status).toLowerCase() !== 'borrowed') {
+          fresh.status = 'borrowed';
+          fresh.borrowedBy = capturedName;
+          renderLibrary();
+        }
+      });
     })
     .catch(function(e) { showToast('Could not borrow: ' + e.message, 'error'); })
     .finally(function() { btn.textContent = "I'm Reading This 📖"; btn.disabled = false; });
@@ -1271,13 +1283,24 @@ function submitReturn_lib() {
   apiCall({ action: 'returnLibraryBook', bookId: pendingReturnId, date: today() })
     .then(function(res) {
       if (res && res.error) throw new Error(res.error);
-      // ✅ FIX: Optimistic update — immediately flip back to Available
-      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(pendingReturnId); });
+      var capturedId = pendingReturnId;
+
+      // Optimistic update — hiện "Available" ngay lập tức
+      var libBook = LIBRARY.find(function(b) { return String(b.id) === String(capturedId); });
       if (libBook) { libBook.status = 'available'; libBook.borrowedBy = ''; }
       closeOverlay('returnOverlay');
-      renderLibrary(); // immediate re-render with "✅ Available" tag
+      renderLibrary();
       showToast("Book returned! Don't forget to post your recommendation 📝");
-      refreshAll(); // background sync
+
+      // Sync server — re-apply nếu server vẫn trả 'borrowed'
+      refreshAll().then(function() {
+        var fresh = LIBRARY.find(function(b) { return String(b.id) === String(capturedId); });
+        if (fresh && String(fresh.status).toLowerCase() === 'borrowed') {
+          fresh.status = 'available';
+          fresh.borrowedBy = '';
+          renderLibrary();
+        }
+      });
     })
     .catch(function(e) { showToast('Could not return: ' + e.message, 'error'); })
     .finally(function() { btn.textContent = 'Confirm Return ✅'; btn.disabled = false; });
